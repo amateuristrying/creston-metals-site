@@ -1,0 +1,76 @@
+/* ------------------------------------------------------------------
+   Creston Metals — design tokens
+   Source of truth for colour, type, space and motion. See DESIGN.md.
+------------------------------------------------------------------- */
+:root {
+  /* Ink — the forge at night */
+  --ink-950: #030304;
+  --ink-900: #050506;
+  --ink-800: #0b0c0e;
+  --ink-700: #121316;
+  --ink-600: #1a1c20;
+  --ink-500: #26292e;
+
+  /* Steel — brushed, cool, neutral */
+  --steel-50: #f5f6f8;
+  --steel-100: #e7e9ed;
+  --steel-200: #cfd3da;
+  --steel-300: #b3b8c1;
+  --steel-400: #8d929c;
+  --steel-500: #6a6f78;
+  --steel-600: #4a4e55;
+
+  /* Ember — the glow in the logo */
+  --ember-200: #ffdca3;
+  --ember-300: #ffc670;
+  --ember-400: #f7ad45;
+  --ember-500: #ee9526;
+  --ember-600: #d2761a;
+  --ember-700: #9a4f0c;
+
+  /* Semantic */
+  --bg: var(--ink-900);
+  --bg-raised: var(--ink-800);
+  --bg-card: var(--ink-700);
+  --text: var(--steel-100);
+  --text-muted: var(--steel-400);
+  --text-faint: var(--steel-500);
+  --accent: var(--ember-400);
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  /* Gradients */
+  --grad-steel: linear-gradient(175deg, #ffffff 0%, #d5d9df 34%, #8b9099 68%, #c4c8cf 100%);
+  --grad-ember: linear-gradient(100deg, #ffdca3 0%, #f7ad45 45%, #d2761a 100%);
+  --glow-ember: radial-gradient(closest-side, rgba(247, 173, 69, 0.38), rgba(247, 173, 69, 0) 100%);
+
+  /* Type */
+  --font-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  --fs-hero: clamp(2.1rem, 8.4vw, 8.5rem);
+  --fs-h1: clamp(2.4rem, 6.6vw, 6.5rem);
+  --fs-h2: clamp(2rem, 4.6vw, 4.5rem);
+  --fs-h3: clamp(1.25rem, 1.7vw, 1.6rem);
+  --fs-lead: clamp(1.05rem, 1.35vw, 1.3rem);
+  --fs-body: clamp(0.95rem, 1.05vw, 1.05rem);
+  --fs-small: 0.8125rem;
+  --fs-label: 0.6875rem;
+
+  /* Space */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --section: clamp(6rem, 14vw, 13rem);
+  --container: 1560px;
+  --radius: 4px;
+  --radius-lg: 10px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-fast: 0.25s;
+  --dur: 0.6s;
+
+  --nav-h: 76px;
+}

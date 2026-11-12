@@ -1,0 +1,5 @@
+# Cloudflare Pages configuration.
+# Build command (set in the Pages dashboard, or use the "Vite" preset): npm run build
+name = "creston-metals-site"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-11-01"
