@@ -121,8 +121,8 @@ export function createHeroScene(canvas) {
     side: THREE.DoubleSide,
   });
   const ribbons = [
-    { radius: 1.45 * S, centre: [-0.087 * S, -0.154 * S], from: 250, to: 60, width: 0.21 * S, tilt: 70, roll: 20, twist: [0.3, -0.5], sway: 1 },
-    { radius: 1.22 * S, centre: [-0.1 * S, -0.2 * S], from: 255, to: 108, width: 0.15 * S, tilt: 69, roll: 18, twist: [0.2, -0.35], sway: -0.7 },
+    { radius: 1.45 * S, centre: [-0.087 * S, -0.154 * S], from: 250, to: 60, width: 0.21 * S, tilt: 70, roll: 20, twist: [0.3, -0.5], orbit: 0.11 },
+    { radius: 1.22 * S, centre: [-0.1 * S, -0.2 * S], from: 255, to: 108, width: 0.15 * S, tilt: 69, roll: 18, twist: [0.2, -0.35], orbit: 0.085 },
   ].map((cfg) => {
     const holder = new THREE.Group();
     holder.position.set(cfg.centre[0], cfg.centre[1], 0);
@@ -132,7 +132,7 @@ export function createHeroScene(canvas) {
     const mesh = new THREE.Mesh(geometry, gold);
     holder.add(mesh);
     spin.add(holder);
-    return { mesh, geometry, total: geometry.index.count, sway: cfg.sway };
+    return { mesh, geometry, total: geometry.index.count, orbit: cfg.orbit, angle: 0 };
   });
 
   // --- sparks
@@ -176,6 +176,8 @@ export function createHeroScene(canvas) {
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
   let active = true;
   let portrait = false;
+  let orbitGain = 0; // eases the orbit in once the intro has finished
+  const stillness = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function layout() {
     const w = canvas.clientWidth || window.innerWidth;
@@ -207,7 +209,8 @@ export function createHeroScene(canvas) {
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const step = Math.min(0.25, (now - last) / 1000); // true elapsed time: keeps the orbit even at any frame rate
+    const dt = Math.min(0.05, step);
     last = now;
     if (!active) return;
     const t = now / 1000;
@@ -224,11 +227,14 @@ export function createHeroScene(canvas) {
     spin.position.y = Math.sin(t * 0.6) * 0.07 + scroll * 1.6;
     spin.scale.setScalar(lerp(0.55, 1, intro) * (1 - scroll * 0.18));
 
-    // the swooshes draw themselves in, breathe at rest, and sweep round on scroll
+    // the swooshes draw themselves in at the logo's pose, then orbit the C —
+    // tip first, about a minute a lap — and sweep faster as the page scrolls
     const drawn = clamp01((intro - 0.25) / 0.75);
+    if (!stillness) orbitGain += ((drawn >= 1 ? 1 : 0) - orbitGain) * (1 - Math.exp(-step * 0.7));
     ribbons.forEach((r) => {
       r.geometry.setDrawRange(0, Math.floor((r.total * drawn) / 6) * 6);
-      r.mesh.rotation.z = (Math.sin(t * 0.45) * 0.035 + scroll * 1.5) * r.sway;
+      r.angle -= r.orbit * orbitGain * step;
+      r.mesh.rotation.z = r.angle - scroll * 1.5;
     });
     ember.intensity = 60 * intro * (0.85 + Math.sin(t * 1.3) * 0.15);
     kiss.intensity = 26 * intro * (0.8 + Math.sin(t * 0.9 + 1) * 0.2);
