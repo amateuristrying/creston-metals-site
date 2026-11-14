@@ -63,13 +63,6 @@ export function initHero(hero) {
     .from('.hero__glow', { scale: 0.5, opacity: 0, duration: 2.4, ease: 'expo.out' }, 0);
   if (hero) intro.to(hero.state, { intro: 1, duration: 2.6, ease: 'expo.out' }, 0);
 
-  // scroll line loop
-  gsap.fromTo(
-    '.hero__scroll-line span',
-    { xPercent: -101 },
-    { xPercent: 101, duration: 1.7, ease: 'power2.inOut', repeat: -1, repeatDelay: 0.2 }
-  );
-
   // leaving the hero
   const out = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
   if (hero) {
@@ -78,12 +71,6 @@ export function initHero(hero) {
   }
   gsap.to('.hero__inner', { yPercent: -14, ease: 'none', scrollTrigger: out });
   gsap.to('.hero__glow', { yPercent: 30, ease: 'none', scrollTrigger: out });
-  // fade the children, not .hero__meta itself — the intro already owns its opacity
-  gsap.fromTo(
-    '.hero__meta > *',
-    { autoAlpha: 1 },
-    { autoAlpha: 0, ease: 'none', immediateRender: false, scrollTrigger: { ...out, end: '22% top' } }
-  );
 
   return intro;
 }
