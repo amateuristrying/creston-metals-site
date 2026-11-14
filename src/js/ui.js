@@ -51,6 +51,62 @@ export function renderContent() {
   $('[data-year]').textContent = new Date().getFullYear();
 }
 
+/* ---------- theme switch: night / day ---------- */
+export function initTheme(onChange) {
+  const root = document.documentElement;
+  const button = $('[data-theme-toggle]');
+  const meta = $('meta[name="theme-color"]');
+  const icons = { light: $('.theme-toggle__cell--sun svg', button), dark: $('.theme-toggle__cell--moon svg', button) };
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const current = () => (root.dataset.theme === 'light' ? 'light' : 'dark');
+
+  const paint = (theme) => {
+    button.setAttribute('aria-checked', String(theme === 'light'));
+    meta.content = theme === 'light' ? '#f6f6f4' : '#050506';
+  };
+
+  const apply = (theme, animate) => {
+    if (theme === 'light') root.dataset.theme = 'light';
+    else delete root.dataset.theme;
+    try {
+      localStorage.setItem('creston-theme', theme);
+    } catch {
+      /* private mode: the choice just lasts for this visit */
+    }
+    paint(theme);
+    onChange?.(theme);
+    if (!animate) return;
+    // the icon you picked spins up; the other one ducks away
+    const other = theme === 'light' ? 'dark' : 'light';
+    gsap.fromTo(icons[theme], { rotation: -120, scale: 0.4 }, { rotation: 0, scale: 1, duration: 0.9, ease: 'expo.out', overwrite: true });
+    gsap.fromTo(icons[other], { rotation: 0, scale: 1 }, { rotation: 60, scale: 0.8, duration: 0.3, ease: 'power2.in', yoyo: true, repeat: 1, overwrite: true });
+  };
+
+  button.addEventListener('click', () => {
+    const next = current() === 'light' ? 'dark' : 'light';
+    gsap.fromTo(button, { scale: 0.92 }, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+    if (!document.startViewTransition || reduced.matches) return apply(next, !reduced.matches);
+
+    // the new theme opens as a circle growing out of the switch
+    const rect = button.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    const transition = document.startViewTransition(() => apply(next, true));
+    transition.ready
+      .then(() =>
+        root.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 950, easing: 'cubic-bezier(0.76, 0, 0.24, 1)', pseudoElement: '::view-transition-new(root)' }
+        )
+      )
+      .catch(() => {});
+  });
+
+  paint(current());
+  onChange?.(current());
+}
+
 /* ---------- cursor ---------- */
 export function initCursor() {
   if (!fine.matches) return;

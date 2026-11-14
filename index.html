@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Creston Metals — The metal behind India's next skyline</title>
+    <title>Creston Metals — The metal behind India's dreams</title>
     <meta
       name="description"
       content="Creston Metals trades ferrous and non-ferrous commodities — steel, copper, aluminium, zinc, nickel and more — for the builders of India's infrastructure."
@@ -15,12 +15,18 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preload" as="image" href="/logo-mark.webp" />
+    <!-- apply a saved theme before first paint -->
+    <script>
+      try {
+        if (localStorage.getItem('creston-theme') === 'light') document.documentElement.dataset.theme = 'light';
+      } catch (e) {}
+    </script>
     <script type="module" src="/src/main.js"></script>
   </head>
 
   <body class="is-loading">
     <!-- Preloader -->
-    <div class="preloader" aria-hidden="true">
+    <div class="preloader theme-night" aria-hidden="true">
       <div class="preloader__inner">
         <img class="preloader__mark" src="/logo-mark.webp" alt="" width="320" height="320" />
         <div class="preloader__row">
@@ -40,10 +46,32 @@
     </div>
 
     <header class="nav" data-nav>
-      <a class="brand" href="#top" aria-label="Creston Metals — home" data-magnetic="0.2">
-        <img src="/logo-mark.webp" alt="" width="44" height="44" />
-        <span class="brand__word">Creston<small>Metals</small></span>
-      </a>
+      <div class="nav__start">
+        <a class="brand" href="#top" aria-label="Creston Metals — home" data-magnetic="0.2">
+          <img src="/logo-mark.webp" alt="" width="44" height="44" />
+          <span class="brand__word">Creston<small>Metals</small></span>
+        </a>
+        <button
+          class="theme-toggle"
+          type="button"
+          role="switch"
+          aria-checked="false"
+          aria-label="Light theme"
+          data-theme-toggle
+          data-magnetic="0.25"
+        >
+          <span class="theme-toggle__thumb" aria-hidden="true"></span>
+          <span class="theme-toggle__cell theme-toggle__cell--sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" />
+            </svg>
+          </span>
+          <span class="theme-toggle__cell theme-toggle__cell--moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.2 8.2 0 1 0 10.2 10.2Z" /></svg>
+          </span>
+        </button>
+      </div>
       <nav class="nav__links" aria-label="Primary">
         <a href="#about" data-roll>About</a>
         <a href="#metals" data-roll>Metals</a>
@@ -83,10 +111,10 @@
 
         <div class="hero__inner container">
           <p class="eyebrow" data-hero-fade><span class="eyebrow__dot"></span>Ferrous &amp; non-ferrous commodities · India</p>
-          <h1 class="hero__title" aria-label="The metal behind India's next skyline.">
+          <h1 class="hero__title" aria-label="The metal behind India's dreams.">
             <span class="hero__line" aria-hidden="true">The metal</span>
             <span class="hero__line" aria-hidden="true">behind India’s</span>
-            <span class="hero__line" aria-hidden="true">next <em>skyline.</em></span>
+            <span class="hero__line" aria-hidden="true">dreams.</span>
           </h1>
           <div class="hero__foot">
             <p class="hero__lede" data-hero-fade>
@@ -189,52 +217,105 @@
       </section>
 
       <!-- ============ BUILD SEQUENCE ============ -->
-      <section class="build" id="build" aria-label="From stockyard to skyline">
-        <div class="build__pin">
-          <canvas class="build__canvas" aria-hidden="true"></canvas>
-          <div class="build__vignette" aria-hidden="true"></div>
+      <section class="seq theme-night" id="build" aria-label="From stockyard to skyline" data-seq>
+        <div class="seq__pin">
+          <canvas class="seq__canvas" aria-hidden="true" data-seq-canvas></canvas>
+          <div class="seq__vignette" aria-hidden="true"></div>
 
-          <div class="build__ui container">
-            <header class="build__head">
+          <div class="seq__ui container">
+            <header class="seq__head">
               <p class="label">(03) — What metal becomes</p>
               <h2 class="h2">From stockyard<br />to <em>skyline.</em></h2>
             </header>
 
-            <ol class="build__steps">
-              <li class="build__step" data-step>
-                <span class="build__step-no">01 / 04</span>
+            <ol class="seq__steps">
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">01 / 04</span>
                 <h3>Sourced</h3>
                 <p>It starts as a stockpile. Beams, columns and bars — graded, tested and matched to the drawing.</p>
               </li>
-              <li class="build__step" data-step>
-                <span class="build__step-no">02 / 04</span>
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">02 / 04</span>
                 <h3>Framed</h3>
                 <p>Member by member, the frame goes up. Steel takes the load so everything above it can stand.</p>
               </li>
-              <li class="build__step" data-step>
-                <span class="build__step-no">03 / 04</span>
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">03 / 04</span>
                 <h3>Enclosed</h3>
                 <p>Floors, façade, glass. A structure becomes a place people can walk into.</p>
               </li>
-              <li class="build__step" data-step>
-                <span class="build__step-no">04 / 04</span>
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">04 / 04</span>
                 <h3>Alive</h3>
                 <p>Lights on. One more piece of India’s future, standing on metal that was moved with care.</p>
               </li>
             </ol>
 
-            <div class="build__hud" aria-hidden="true">
-              <div class="build__read">
+            <div class="seq__hud" aria-hidden="true">
+              <div class="seq__read">
                 <span>Members placed</span>
-                <strong><span data-hud-members>000</span><small> / 560</small></strong>
+                <strong><span data-hud-a>000</span><small> / 560</small></strong>
               </div>
-              <div class="build__read">
+              <div class="seq__read">
                 <span>Floor</span>
-                <strong><span data-hud-floor>00</span><small> / 14</small></strong>
+                <strong><span data-hud-b>00</span><small> / 14</small></strong>
               </div>
-              <div class="build__read build__read--wide">
+              <div class="seq__read seq__read--wide">
                 <span>Progress</span>
-                <div class="build__bar"><span data-hud-bar></span></div>
+                <div class="seq__bar"><span data-hud-bar></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DRIVE SEQUENCE ============ -->
+      <section class="seq theme-night" id="drive" aria-label="From coil to open road" data-seq>
+        <div class="seq__pin">
+          <canvas class="seq__canvas" aria-hidden="true" data-seq-canvas></canvas>
+          <div class="seq__vignette" aria-hidden="true"></div>
+
+          <div class="seq__ui container">
+            <header class="seq__head">
+              <p class="label">(04) — What metal moves</p>
+              <h2 class="h2">From coil<br />to <em>open road.</em></h2>
+            </header>
+
+            <ol class="seq__steps">
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">01 / 04</span>
+                <h3>Coiled</h3>
+                <p>It leaves the mill as a coil — hot-rolled strip, wound tight and still glowing.</p>
+              </li>
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">02 / 04</span>
+                <h3>Unwound</h3>
+                <p>Paid out, levelled and cooled. Flat steel, in the gauge and grade the press line asked for.</p>
+              </li>
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">03 / 04</span>
+                <h3>Pressed</h3>
+                <p>Blank by blank, the sheet takes a shape — bonnet, roof, doors. A body comes together.</p>
+              </li>
+              <li class="seq__step" data-step>
+                <span class="seq__step-no">04 / 04</span>
+                <h3>On the road</h3>
+                <p>Lights on, wheels turning. Steel that began as a coil is now somebody’s journey.</p>
+              </li>
+            </ol>
+
+            <div class="seq__hud" aria-hidden="true">
+              <div class="seq__read">
+                <span>Panels fitted</span>
+                <strong><span data-hud-a>00</span><small> / 21</small></strong>
+              </div>
+              <div class="seq__read">
+                <span>Speed</span>
+                <strong><span data-hud-b>000</span><small> km/h</small></strong>
+              </div>
+              <div class="seq__read seq__read--wide">
+                <span>Progress</span>
+                <div class="seq__bar"><span data-hud-bar></span></div>
               </div>
             </div>
           </div>
@@ -245,7 +326,7 @@
       <section class="industries" id="industries">
         <div class="container">
           <header class="sec-head">
-            <p class="label" data-reveal>(04) — Where it goes</p>
+            <p class="label" data-reveal>(05) — Where it goes</p>
             <h2 class="h2" data-split>Metal for the work that <em>moves a country.</em></h2>
           </header>
         </div>
@@ -256,7 +337,7 @@
       <section class="process" id="process">
         <div class="container">
           <header class="sec-head">
-            <p class="label" data-reveal>(05) — How we work</p>
+            <p class="label" data-reveal>(06) — How we work</p>
             <h2 class="h2" data-split>Four steps. <em>No surprises.</em></h2>
           </header>
 
@@ -297,7 +378,7 @@
         <div class="contact__glow" aria-hidden="true"></div>
         <div class="container contact__grid">
           <div class="contact__lead">
-            <p class="label" data-reveal>(06) — Start an order</p>
+            <p class="label" data-reveal>(07) — Start an order</p>
             <h2 class="h1" data-split>Let’s build something that <em>lasts.</em></h2>
             <p class="contact__copy" data-reveal>
               Send us your requirement — grade, tonnage, delivery location — and we will come back with availability and

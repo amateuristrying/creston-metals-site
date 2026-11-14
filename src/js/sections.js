@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { BUILD_STEPS } from './build-scene.js';
+import { AUTO_STEPS, AUTO_PANELS } from './auto-scene.js';
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
@@ -259,15 +260,16 @@ export function initMetals() {
   });
 }
 
-/* ---------- build sequence ---------- */
-export function initBuild(scene) {
-  const steps = $$('[data-step]');
-  const members = $('[data-hud-members]');
-  const floor = $('[data-hud-floor]');
-  const bar = $('[data-hud-bar]');
+/* ---------- pinned 3D sequences (stockyard → skyline, coil → open road) ---------- */
+function initSequence(root, scene, { thresholds, read, estimate, pads, length }) {
+  const steps = $$('[data-step]', root);
+  const readA = $('[data-hud-a]', root);
+  const readB = $('[data-hud-b]', root);
+  const bar = $('[data-hud-bar]', root);
+  const head = $('.seq__head', root);
   let current = -1;
-  let lastPlaced = -1;
-  let lastFloor = -1;
+  let lastA = -1;
+  let lastB = -1;
 
   const showStep = (index) => {
     if (index === current) return;
@@ -275,9 +277,12 @@ export function initBuild(scene) {
     const next = steps[index];
     const direction = index > current ? 1 : -1;
     current = index;
-    if (previous) {
-      gsap.to(previous, { autoAlpha: 0, y: -24 * direction, duration: 0.4, ease: 'power2.in', overwrite: true });
-    }
+    // hide every other caption, not just the last one: a fast scroll can pass several at once
+    steps.forEach((step) => {
+      if (step === next) return;
+      if (step === previous) gsap.to(step, { autoAlpha: 0, y: -24 * direction, duration: 0.4, ease: 'power2.in', overwrite: true });
+      else gsap.set(step, { autoAlpha: 0, overwrite: true });
+    });
     gsap.fromTo(
       next,
       { autoAlpha: 0, y: 36 * direction },
@@ -290,45 +295,43 @@ export function initBuild(scene) {
     );
   };
 
-  const update = (p, placed, level) => {
+  const update = (p, a, b) => {
     let index = 0;
-    BUILD_STEPS.forEach((threshold, i) => p >= threshold && (index = i));
+    thresholds.forEach((threshold, i) => p >= threshold && (index = i));
     showStep(index);
-    if (placed !== lastPlaced) members.textContent = pad((lastPlaced = placed), 3);
-    if (level !== lastFloor) floor.textContent = pad((lastFloor = level));
+    if (a !== lastA) readA.textContent = pad((lastA = a), pads[0]);
+    if (b !== lastB) readB.textContent = pad((lastB = b), pads[1]);
     bar.style.transform = `scaleX(${p.toFixed(4)})`;
   };
 
   const isPhone = () => window.innerWidth < 760;
 
   if (scene) {
-    scene.onFrame((info) => update(info.p, info.placed, info.floor));
+    scene.onFrame((info) => update(info.p, ...read(info)));
     // only render while the section is anywhere near the screen
-    new IntersectionObserver(([entry]) => scene.setActive(entry.isIntersecting), { rootMargin: '20% 0px' }).observe(
-      $('.build')
-    );
+    new IntersectionObserver(([entry]) => scene.setActive(entry.isIntersecting), { rootMargin: '20% 0px' }).observe(root);
   }
 
   ScrollTrigger.create({
-    trigger: '.build',
-    pin: '.build__pin',
+    trigger: root,
+    pin: $('.seq__pin', root),
     start: 'top top',
-    end: () => `+=${window.innerHeight * (isPhone() ? 3.4 : 4.4)}`,
+    end: () => `+=${window.innerHeight * (isPhone() ? length[1] : length[0])}`,
     scrub: true,
     anticipatePin: 1,
     invalidateOnRefresh: true,
     onUpdate(self) {
       if (scene) scene.setProgress(self.progress);
-      else update(self.progress, Math.round(self.progress * 560), Math.round(self.progress * 14));
+      else update(self.progress, ...estimate(self.progress));
     },
   });
 
   showStep(0);
 
-  // on phones the headline steps aside once the build is under way
+  // on phones the headline steps aside once the sequence is under way
   gsap.matchMedia().add('(max-width: 720px)', () => {
     gsap.fromTo(
-      '.build__head',
+      head,
       { autoAlpha: 1, y: 0 },
       {
         autoAlpha: 0,
@@ -336,7 +339,7 @@ export function initBuild(scene) {
         ease: 'none',
         immediateRender: false,
         scrollTrigger: {
-          trigger: '.build',
+          trigger: root,
           start: () => `top+=${window.innerHeight * 0.35} top`,
           end: () => `top+=${window.innerHeight * 0.75} top`,
           scrub: true,
@@ -345,20 +348,43 @@ export function initBuild(scene) {
     );
   });
 
-  gsap.from('.build__head > *', {
+  gsap.from(head.children, {
     y: 40,
     opacity: 0,
     duration: 1.2,
     ease: 'expo.out',
     stagger: 0.1,
-    scrollTrigger: { trigger: '.build', start: 'top 55%', once: true },
+    scrollTrigger: { trigger: root, start: 'top 55%', once: true },
   });
-  gsap.from('.build__hud', {
+  gsap.from($('.seq__hud', root), {
     opacity: 0,
     y: 20,
     duration: 1,
     ease: 'expo.out',
-    scrollTrigger: { trigger: '.build', start: 'top 30%', once: true },
+    scrollTrigger: { trigger: root, start: 'top 30%', once: true },
+  });
+}
+
+export function initBuild(scene) {
+  initSequence($('#build'), scene, {
+    thresholds: BUILD_STEPS,
+    read: (info) => [info.placed, info.floor],
+    estimate: (p) => [Math.round(p * 560), Math.round(p * 14)],
+    pads: [3, 2],
+    length: [4.4, 3.4],
+  });
+}
+
+export function initDrive(scene) {
+  initSequence($('#drive'), scene, {
+    thresholds: AUTO_STEPS,
+    read: (info) => [info.panels, info.speed],
+    estimate: (p) => [
+      Math.round(Math.min(1, p / 0.66) * AUTO_PANELS),
+      Math.round(Math.min(1, Math.max(0, (p - 0.74) / 0.26)) * 96),
+    ],
+    pads: [2, 3],
+    length: [5.2, 4],
   });
 }
 

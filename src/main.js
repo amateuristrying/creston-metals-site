@@ -13,8 +13,10 @@ import Lenis from 'lenis';
 
 import { createHeroScene } from './js/hero-scene.js';
 import { createBuildScene } from './js/build-scene.js';
+import { createAutoScene } from './js/auto-scene.js';
 import {
   renderContent,
+  initTheme,
   initCursor,
   initMagnetic,
   initButtons,
@@ -31,6 +33,7 @@ import {
   initAbout,
   initMetals,
   initBuild,
+  initDrive,
   initIndustries,
   initProcess,
   initOutro,
@@ -68,11 +71,13 @@ function safely(create, canvas) {
   }
 }
 const hero = safely(createHeroScene, document.querySelector('.hero__canvas'));
-const build = safely(createBuildScene, document.querySelector('.build__canvas'));
+const build = safely(createBuildScene, document.querySelector('#build [data-seq-canvas]'));
+const drive = safely(createAutoScene, document.querySelector('#drive [data-seq-canvas]'));
 gsap.ticker.add(() => {
   const now = performance.now();
   hero?.frame(now);
   build?.frame(now);
+  drive?.frame(now);
 });
 
 /* ---------- preloader → hero ---------- */
@@ -112,6 +117,7 @@ async function start() {
   // split text needs final glyph metrics
   await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 2500))]);
 
+  initTheme((theme) => hero?.setTheme(theme));
   initRollLinks();
   initButtons();
   initMagnetic();
@@ -124,6 +130,7 @@ async function start() {
     if (hero) hero.state.intro = 1;
     initMetals();
     initBuild(build);
+    initDrive(drive);
     initProcess();
     document.body.classList.remove('is-loading');
     runPreloader(() => {});
@@ -138,10 +145,11 @@ async function start() {
   initAbout();
   initMetals(); // pin
   initBuild(build); // pin
+  initDrive(drive); // pin
   initIndustries();
   initProcess();
   initOutro();
-  initReveals(); // page-wide; safe now that both pins exist
+  initReveals(); // page-wide; safe now that every pin exists
   initTilt();
   initIndustryRows();
   ScrollTrigger.refresh();

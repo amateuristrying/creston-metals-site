@@ -1,8 +1,16 @@
 /* ------------------------------------------------------------------
    Creston Metals — design tokens
    Source of truth for colour, type, space and motion. See DESIGN.md.
+
+   Two themes share one set of names:
+     night (default)  — ink page, steel text
+     day              — paper page, ink text  ([data-theme='light'] on <html>)
+   The ink and steel scales swap ends between themes, so components written
+   against them need no theme-specific rules. `.theme-night` pins a subtree
+   to the night values (the cinematic 3D sequences are always shot at night).
 ------------------------------------------------------------------- */
-:root {
+:root,
+.theme-night {
   /* Ink — the forge at night */
   --ink-950: #030304;
   --ink-900: #050506;
@@ -20,7 +28,7 @@
   --steel-500: #6a6f78;
   --steel-600: #4a4e55;
 
-  /* Ember — the glow in the logo */
+  /* Ember — the glow in the logo (the same in both themes) */
   --ember-200: #ffdca3;
   --ember-300: #ffc670;
   --ember-400: #f7ad45;
@@ -35,15 +43,63 @@
   --text: var(--steel-100);
   --text-muted: var(--steel-400);
   --text-faint: var(--steel-500);
-  --accent: var(--ember-400);
+  --accent: var(--ember-400); /* accent as text or hairline */
+  --accent-em: var(--ember-300); /* the serif word in a headline */
+  --on-accent: #050506; /* text on an ember fill — never flips */
   --line: rgba(255, 255, 255, 0.09);
   --line-strong: rgba(255, 255, 255, 0.18);
 
-  /* Gradients */
+  /* Gradients and surfaces */
   --grad-steel: linear-gradient(175deg, #ffffff 0%, #d5d9df 34%, #8b9099 68%, #c4c8cf 100%);
+  --grad-title: linear-gradient(180deg, #ffffff 12%, #aab0ba 96%);
+  --grad-word: linear-gradient(180deg, #f2f3f5 0%, #9aa0aa 46%, #3b3e44 100%);
   --grad-ember: linear-gradient(100deg, #ffdca3 0%, #f7ad45 45%, #d2761a 100%);
   --glow-ember: radial-gradient(closest-side, rgba(247, 173, 69, 0.38), rgba(247, 173, 69, 0) 100%);
+  --card-edge: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.1));
+  --card-fill: linear-gradient(165deg, #191b20 0%, #0d0e11 55%, #0a0b0d 100%);
+  --panel: linear-gradient(165deg, rgba(25, 27, 32, 0.85), rgba(11, 12, 14, 0.85));
+  --title-shadow: rgba(3, 3, 4, 0.55);
+  --grain: 0.07;
 
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  /* Paper — the ink scale, turned over */
+  --ink-950: #e9eaeb;
+  --ink-900: #f6f6f4;
+  --ink-800: #eeeeec;
+  --ink-700: #ffffff;
+  --ink-600: #e1e2e1;
+  --ink-500: #cdcfd0;
+
+  --steel-50: #08090b;
+  --steel-100: #121316;
+  --steel-200: #23262b;
+  --steel-300: #3a3e45;
+  --steel-400: #595e67;
+  --steel-500: #6b7079;
+  --steel-600: #a4a9b1;
+
+  --accent: #a9590b;
+  --accent-em: #b3600e;
+  --line: rgba(5, 5, 6, 0.11);
+  --line-strong: rgba(5, 5, 6, 0.24);
+
+  --grad-steel: linear-gradient(175deg, #08090b 0%, #33373d 34%, #7b818b 68%, #2a2d32 100%);
+  --grad-title: linear-gradient(180deg, #08090b 12%, #41454c 96%);
+  --grad-word: linear-gradient(180deg, #08090b 0%, #4d5159 46%, #b9bdc4 100%);
+  --glow-ember: radial-gradient(closest-side, rgba(247, 173, 69, 0.5), rgba(247, 173, 69, 0) 100%);
+  --card-edge: linear-gradient(150deg, rgba(5, 5, 6, 0.3), rgba(5, 5, 6, 0.08) 40%, rgba(5, 5, 6, 0.16));
+  --card-fill: linear-gradient(165deg, #ffffff 0%, #f6f6f4 55%, #efefed 100%);
+  --panel: linear-gradient(165deg, rgba(255, 255, 255, 0.9), rgba(246, 246, 244, 0.9));
+  --title-shadow: rgba(255, 255, 255, 0);
+  --grain: 0.05;
+
+  color-scheme: light;
+}
+
+:root {
   /* Type */
   --font-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;

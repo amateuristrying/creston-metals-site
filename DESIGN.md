@@ -38,8 +38,23 @@ Tokens live in [`src/styles/tokens.css`](src/styles/tokens.css). Change a value 
 **Rules**
 
 - Ember never covers more than ~10% of a viewport, except a deliberate hover fill.
-- Ember on ink and ink on ember both pass WCAG AA. Never put steel-400 text on ember.
-- No pure white backgrounds. No blues, greens or reds anywhere in the UI.
+- Ember on ink and ink on ember both pass WCAG AA. Never put steel-400 text on ember. Text on an ember fill always uses `--on-accent`, which does not change with the theme.
+- No blues, greens or reds anywhere in the UI.
+
+**Themes**
+
+The site has two themes, switched with the sun | moon control beside the logo. The choice is saved on the visitor's device; night is the default.
+
+| | Night (default) | Day (`data-theme="light"` on `<html>`) |
+|---|---|---|
+| Page | `#050506` | `#f6f6f4` |
+| Card | `#121316` | `#ffffff` |
+| Text | `#e7e9ed` | `#121316` |
+| Accent as text | `#f7ad45` | `#a9590b` (deeper, to hold contrast on paper) |
+
+- The `--ink-*` and `--steel-*` scales swap ends between themes, so components are written once.
+- Add `.theme-night` to pin a subtree to the night palette. The preloader and the two 3D sequences use it: molten steel is always shot in the dark.
+- By day the logo mark sits on its own black cut plate; it is never placed directly on paper.
 
 ---
 
@@ -64,7 +79,9 @@ Tokens live in [`src/styles/tokens.css`](src/styles/tokens.css). Change a value 
 | `--fs-body` | 15 → 17px | Body |
 | `--fs-label` | 11px | Mono labels |
 
-**The headline pattern.** Wide uppercase sans, with exactly one word in serif italic ember: `FROM STOCKYARD TO *skyline.*` The serif word is the soft thing the hard thing makes possible.
+**The headline pattern.** Section headlines are wide uppercase sans, with exactly one word in serif italic ember: `FROM STOCKYARD TO *skyline.*` The serif word is the soft thing the hard thing makes possible.
+
+**The hero tagline is the exception:** `THE METAL BEHIND INDIA'S DREAMS.` is set in one face and one colour, with no serif word.
 
 **Section labels** follow `(03) — What metal becomes`, in mono.
 
@@ -115,8 +132,10 @@ Built on **GSAP** (ScrollTrigger, SplitText) with **Lenis** smooth scrolling, an
 
 **Signature moments**
 
-1. **Hero** — a 3D brushed-steel C with orbiting ember ribbons (the logo, built in Three.js), reacting to pointer and scroll.
+1. **Hero** — the logo rebuilt in Three.js: a brushed-steel C traced from the mark (flat top and base, diagonal cuts, offset bowl) with two gold swooshes that draw themselves in, cross the bowl and sweep round on scroll.
 2. **Stockyard → Skyline** — a pinned, scroll-scrubbed Three.js sequence. 560 steel members leave a stockpile, heat to ember in flight, and cool into a 14-storey frame; glass rises; dawn breaks; the lights come on.
+3. **Coil → Open road** — the sequence that follows it. A glowing hot-rolled coil pays out along a roller table; a press cuts blanks that form in flight into 15 body panels; wheels roll in, glass is set, the steel is finished and the lamps come on; the car then drives into first light, its travel tied to scroll.
+4. **Theme switch** — the new theme opens as a circle growing out of the sun | moon control.
 
 ---
 

@@ -1,21 +1,56 @@
 import * as THREE from 'three';
-import { makeStudioEnv, brushedTexture, glowTexture, lerp } from './studio.js';
+import { makeStudioEnv, brushedTexture, glowTexture, lerp, clamp01 } from './studio.js';
 
 const DEG = Math.PI / 180;
 
-/** The logo's C: two arcs with steep diagonal cuts at the terminals. */
-function cShape(R, r) {
+/**
+ * The logo's C, traced from the mark: a round bowl whose top and bottom run
+ * out flat and are cut on the diagonal. Unit = outer radius.
+ */
+function cShape(S) {
   const shape = new THREE.Shape();
-  const outerStart = 40 * DEG;
-  const outerEnd = 320 * DEG;
-  const innerStart = 27 * DEG;
-  const innerEnd = 333 * DEG;
-  shape.moveTo(Math.cos(outerStart) * R, Math.sin(outerStart) * R);
-  shape.absarc(0, 0, R, outerStart, outerEnd, false);
-  shape.lineTo(Math.cos(innerEnd) * r, Math.sin(innerEnd) * r);
-  shape.absarc(0, 0, r, innerEnd, innerStart, true);
-  shape.closePath();
+  shape.moveTo(0, S);
+  shape.lineTo(1.12 * S, S); // flat top edge, out to the tip
+  shape.lineTo(0.765 * S, 0.41 * S); // diagonal cut
+  shape.quadraticCurveTo(0.62 * S, 0.575 * S, 0.333 * S, 0.647 * S); // claw back into the bowl
+  shape.absarc(0.16 * S, 0, 0.67 * S, 75 * DEG, 270 * DEG, false); // inner bowl, set right of centre
+  shape.lineTo(0.45 * S, -0.67 * S);
+  shape.lineTo(0.695 * S, -0.365 * S); // the notch of the lower arm
+  shape.lineTo(1.1 * S, -0.365 * S);
+  shape.lineTo(0.72 * S, -S); // diagonal cut
+  shape.lineTo(0, -S); // flat base
+  shape.absarc(0, 0, S, 270 * DEG, 90 * DEG, true); // outer bowl
   return shape;
+}
+
+/**
+ * A gold swoosh: a flat band on a circular arc that tapers to a point at both
+ * ends and twists a little along its length. Built tail-first so a growing
+ * draw range "draws" it toward the tip.
+ */
+function ribbonGeometry({ radius, from, to, width, twist = [0, 0], segments = 180 }) {
+  const positions = [];
+  const indices = [];
+  for (let i = 0; i <= segments; i++) {
+    const u = i / segments;
+    const angle = from + (to - from) * u;
+    const half = Math.max(0.002, width * 0.5 * Math.pow(Math.sin(Math.PI * Math.pow(u, 0.8)), 0.85));
+    const roll = twist[0] + (twist[1] - twist[0]) * u;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const dr = Math.cos(roll) * half;
+    const dz = Math.sin(roll) * half;
+    positions.push((radius - dr) * cos, (radius - dr) * sin, -dz, (radius + dr) * cos, (radius + dr) * sin, dz);
+    if (i < segments) {
+      const k = i * 2;
+      indices.push(k, k + 1, k + 3, k, k + 3, k + 2);
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
 }
 
 /**
@@ -45,6 +80,8 @@ export function createHeroScene(canvas) {
   // --- steel C
   const brushed = brushedTexture();
   brushed.repeat.set(0.45, 0.45);
+  brushed.center.set(0.5, 0.5);
+  brushed.rotation = 0.42; // the grain in the mark runs on the diagonal
   const steel = new THREE.MeshPhysicalMaterial({
     color: 0xeef0f3,
     metalness: 1,
@@ -56,38 +93,46 @@ export function createHeroScene(canvas) {
     clearcoatRoughness: 0.4,
     envMapIntensity: 1.9,
   });
-  const cGeometry = new THREE.ExtrudeGeometry(cShape(1.72, 1.04), {
-    depth: 0.6,
+  const S = 1.72;
+  const DEPTH = 0.5;
+  const cGeometry = new THREE.ExtrudeGeometry(cShape(S), {
+    depth: DEPTH,
     bevelEnabled: true,
-    bevelThickness: 0.045,
-    bevelSize: 0.045,
+    bevelThickness: 0.04,
+    bevelSize: 0.035,
     bevelSegments: 5,
     curveSegments: 96,
   });
-  cGeometry.center();
+  // keep the bowl's centre at the origin: the ribbons are placed against it
+  cGeometry.translate(0, 0, -DEPTH / 2);
   const cMesh = new THREE.Mesh(cGeometry, steel);
   spin.add(cMesh);
 
-  // --- ember ribbons (partial rings, flattened into bands)
+  // --- ember ribbons: two swooshes that rise from under the C, round its left
+  //     side and cross in front of the bowl — as in the mark
   const gold = new THREE.MeshPhysicalMaterial({
-    color: 0xf5a83c,
+    color: 0xffb648,
     metalness: 1,
-    roughness: 0.2,
-    emissive: 0x6b3200,
-    emissiveIntensity: 0.9,
-    envMapIntensity: 1.4,
+    roughness: 0.26,
+    // the swooshes are lit from within, like the glow in the mark
+    emissive: 0xc8741a,
+    emissiveIntensity: 0.95,
+    envMapIntensity: 1.6,
+    side: THREE.DoubleSide,
   });
   const ribbons = [
-    { radius: 2.36, tube: 0.022, arc: 1.5 * Math.PI, tilt: [74 * DEG, 0, 16 * DEG], width: 3.4, speed: 0.34 },
-    { radius: 2.66, tube: 0.014, arc: 1.15 * Math.PI, tilt: [68 * DEG, 0.25, 24 * DEG], width: 3, speed: -0.22 },
+    { radius: 1.45 * S, centre: [-0.087 * S, -0.154 * S], from: 250, to: 60, width: 0.21 * S, tilt: 70, roll: 20, twist: [0.3, -0.5], sway: 1 },
+    { radius: 1.22 * S, centre: [-0.1 * S, -0.2 * S], from: 255, to: 108, width: 0.15 * S, tilt: 69, roll: 18, twist: [0.2, -0.35], sway: -0.7 },
   ].map((cfg) => {
     const holder = new THREE.Group();
-    holder.rotation.set(...cfg.tilt);
-    const mesh = new THREE.Mesh(new THREE.TorusGeometry(cfg.radius, cfg.tube, 10, 220, cfg.arc), gold);
-    mesh.scale.z = cfg.width;
+    holder.position.set(cfg.centre[0], cfg.centre[1], 0);
+    holder.rotation.order = 'ZXY'; // tip toward the viewer first, then roll in the picture plane
+    holder.rotation.set(cfg.tilt * DEG, 0, cfg.roll * DEG);
+    const geometry = ribbonGeometry({ radius: cfg.radius, from: cfg.from * DEG, to: cfg.to * DEG, width: cfg.width, twist: cfg.twist });
+    const mesh = new THREE.Mesh(geometry, gold);
     holder.add(mesh);
     spin.add(holder);
-    return { mesh, speed: cfg.speed };
+    return { mesh, geometry, total: geometry.index.count, sway: cfg.sway };
   });
 
   // --- sparks
@@ -119,6 +164,10 @@ export function createHeroScene(canvas) {
   const ember = new THREE.PointLight(0xffa040, 60, 14, 2);
   ember.position.set(-2.6, 0.4, -1.6);
   rig.add(ember);
+  // a hot highlight where the swooshes turn, front-left
+  const kiss = new THREE.PointLight(0xffd08a, 0, 9, 2);
+  kiss.position.set(-3.4, -0.9, 2.6);
+  rig.add(kiss);
   const key = new THREE.DirectionalLight(0xffffff, 2.2);
   key.position.set(3, 5, 6);
   scene.add(key);
@@ -138,11 +187,11 @@ export function createHeroScene(canvas) {
     const halfW = halfH * camera.aspect;
     portrait = camera.aspect < 0.95;
     if (portrait) {
-      rig.position.set(halfW * 0.2, halfH * 0.46, 0);
-      rig.scale.setScalar(Math.min(0.8, halfW / 2.9));
+      rig.position.set(halfW * 0.16, halfH * 0.5, 0);
+      rig.scale.setScalar(Math.min(0.8, halfW / 3.15));
     } else {
-      rig.position.set(halfW * 0.54, halfH * 0.14, 0);
-      rig.scale.setScalar(Math.min(1.1, halfW / 4.9));
+      rig.position.set(halfW * 0.54, halfH * 0.1, 0);
+      rig.scale.setScalar(Math.min(1.06, halfW / 5.1));
     }
   }
 
@@ -170,13 +219,19 @@ export function createHeroScene(canvas) {
 
     const intro = state.intro;
     const scroll = state.scroll;
-    spin.rotation.y = -0.5 + Math.sin(t * 0.35) * 0.1 + scroll * 1.9 - (1 - intro) * 2.6;
-    spin.rotation.x = 0.08 + Math.sin(t * 0.27) * 0.04 + scroll * 0.35;
+    spin.rotation.y = -0.34 + Math.sin(t * 0.35) * 0.08 + scroll * 1.9 - (1 - intro) * 2.6;
+    spin.rotation.x = 0.06 + Math.sin(t * 0.27) * 0.035 + scroll * 0.35;
     spin.position.y = Math.sin(t * 0.6) * 0.07 + scroll * 1.6;
     spin.scale.setScalar(lerp(0.55, 1, intro) * (1 - scroll * 0.18));
 
-    ribbons.forEach((r) => (r.mesh.rotation.z += r.speed * dt * (1 + scroll * 4)));
+    // the swooshes draw themselves in, breathe at rest, and sweep round on scroll
+    const drawn = clamp01((intro - 0.25) / 0.75);
+    ribbons.forEach((r) => {
+      r.geometry.setDrawRange(0, Math.floor((r.total * drawn) / 6) * 6);
+      r.mesh.rotation.z = (Math.sin(t * 0.45) * 0.035 + scroll * 1.5) * r.sway;
+    });
     ember.intensity = 60 * intro * (0.85 + Math.sin(t * 1.3) * 0.15);
+    kiss.intensity = 26 * intro * (0.8 + Math.sin(t * 0.9 + 1) * 0.2);
 
     const pos = sparkGeometry.attributes.position;
     for (let i = 0; i < SPARKS; i++) {
@@ -197,6 +252,13 @@ export function createHeroScene(canvas) {
     frame,
     setActive(value) {
       active = value;
+    },
+    /** On paper, additive sparks wash out: swap them for ink-safe embers. */
+    setTheme(theme) {
+      const light = theme === 'light';
+      sparks.material.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
+      sparks.material.color.set(light ? 0xd2761a : 0xffffff);
+      sparks.material.needsUpdate = true;
     },
     dispose() {
       window.removeEventListener('pointermove', onPointer);
