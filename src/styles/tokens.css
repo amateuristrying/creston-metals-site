@@ -3,11 +3,11 @@
    Source of truth for colour, type, space and motion. See DESIGN.md.
 
    Two themes share one set of names:
-     night (default)  — ink page, steel text
-     day              — paper page, ink text  ([data-theme='light'] on <html>)
+     day (default)    — paper page, ink text  ([data-theme='light'] on <html>)
+     night            — ink page, steel text  (no attribute)
    The ink and steel scales swap ends between themes, so components written
    against them need no theme-specific rules. `.theme-night` pins a subtree
-   to the night values (the cinematic 3D sequences are always shot at night).
+   to the night values, whatever the page theme.
 ------------------------------------------------------------------- */
 :root,
 .theme-night {
@@ -40,6 +40,7 @@
   --bg: var(--ink-900);
   --bg-raised: var(--ink-800);
   --bg-card: var(--ink-700);
+  --bg-clear: color-mix(in srgb, var(--ink-900) 0%, transparent); /* the page colour at zero alpha, for fades */
   --text: var(--steel-100);
   --text-muted: var(--steel-400);
   --text-faint: var(--steel-500);

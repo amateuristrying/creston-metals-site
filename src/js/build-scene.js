@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   makeStudioEnv,
+  makeDawnSky,
+  PAPER,
+  NIGHT,
   glowTexture,
   clamp01,
   lerp,
@@ -68,62 +71,35 @@ export function createBuildScene(canvas) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
 
+  // two studios: the forge at night, and a white cyclorama for the day theme
+  const envNight = makeStudioEnv(renderer);
+  const envDay = makeStudioEnv(renderer, true);
   const scene = new THREE.Scene();
-  scene.environment = makeStudioEnv(renderer);
-  scene.fog = new THREE.Fog(0x040405, 38, 130);
+  scene.environment = envNight;
+  scene.fog = new THREE.Fog(NIGHT.clone(), 38, 130);
+  let day = false;
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400);
 
-  /* ---------- sky: night that turns to first light ---------- */
-  const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(200, 32, 16),
-    new THREE.ShaderMaterial({
-      side: THREE.BackSide,
-      depthWrite: false,
-      fog: false,
-      uniforms: { uDawn: { value: 0 }, uSun: { value: new THREE.Vector3(0, 0, -1) } },
-      vertexShader: /* glsl */ `
-        varying vec3 vDir;
-        void main() {
-          vDir = position;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }`,
-      fragmentShader: /* glsl */ `
-        varying vec3 vDir;
-        uniform float uDawn;
-        uniform vec3 uSun;
-        void main() {
-          vec3 dir = normalize(vDir);
-          float h = max(dir.y, 0.0);
-          float toward = max(dot(normalize(vec3(dir.x, 0.0, dir.z)), uSun), 0.0);
-          vec3 night = vec3(0.004, 0.004, 0.006);
-          float band = exp(-h * mix(16.0, 9.5, uDawn));
-          vec3 ember = mix(vec3(0.16, 0.08, 0.03), vec3(1.05, 0.40, 0.09), uDawn);
-          vec3 glow = ember * band * mix(0.22, 0.95, uDawn) * mix(0.2, 1.0, pow(toward, 3.0));
-          // a little indigo overhead so the dark is a sky, not a void
-          vec3 high = vec3(0.016, 0.02, 0.045) * uDawn * (1.0 - exp(-h * 3.0)) + vec3(0.10, 0.05, 0.05) * uDawn * exp(-h * 3.5) * toward;
-          gl_FragColor = vec4(night + glow + high, 1.0);
-          #include <tonemapping_fragment>
-          #include <colorspace_fragment>
-        }`,
-    })
-  );
-  sky.frustumCulled = false;
+  /* ---------- sky: night that turns to first light (or paper, by day) ---------- */
+  const sky = makeDawnSky();
   scene.add(sky);
 
   /* ---------- ground ---------- */
-  const ground = new THREE.Mesh(
-    new THREE.CircleGeometry(140, 64),
-    new THREE.MeshStandardMaterial({ color: 0x0a0b0d, metalness: 0.55, roughness: 0.58 })
-  );
+  const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x0a0b0d, metalness: 0.55, roughness: 0.58 });
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(140, 64), groundMaterial);
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
 
   const grid = new THREE.GridHelper(96, 60, 0x4a3312, 0x1b1c20);
-  grid.position.y = 0.01;
-  grid.material.transparent = true;
-  grid.material.opacity = 0.55;
-  scene.add(grid);
+  const gridDay = new THREE.GridHelper(96, 60, 0xc98a3a, 0xa4a7ab);
+  [grid, gridDay].forEach((g) => {
+    g.position.y = 0.01;
+    g.material.transparent = true;
+    g.material.opacity = 0.55;
+    scene.add(g);
+  });
+  gridDay.visible = false;
 
   const spill = new THREE.Mesh(
     new THREE.PlaneGeometry(26, 26),
@@ -142,11 +118,8 @@ export function createBuildScene(canvas) {
 
   /* ---------- a quiet city on the horizon ---------- */
   const CITY = 190;
-  const city = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({ color: 0x030304 }),
-    CITY
-  );
+  const cityMaterial = new THREE.MeshBasicMaterial({ color: 0x030304 });
+  const city = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), cityMaterial, CITY);
   {
     const m = new THREE.Matrix4();
     const q = new THREE.Quaternion();
@@ -265,11 +238,8 @@ export function createBuildScene(canvas) {
   const cHot = new THREE.Color(1.9, 0.95, 0.24);
 
   /* ---------- decks ---------- */
-  const decks = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshStandardMaterial({ color: 0x23252a, metalness: 0.4, roughness: 0.75 }),
-    FLOORS
-  );
+  const deckMaterial = new THREE.MeshStandardMaterial({ color: 0x23252a, metalness: 0.4, roughness: 0.75 });
+  const decks = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), deckMaterial, FLOORS);
   decks.frustumCulled = false;
   scene.add(decks);
 
@@ -289,19 +259,16 @@ export function createBuildScene(canvas) {
       add(-W / 2, (i + 0.5) * BAY - D / 2, true, -1, 0);
     }
   }
-  const glass = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshPhysicalMaterial({
-      color: 0x1a2f45,
-      metalness: 0.9,
-      roughness: 0.07,
-      transparent: true,
-      opacity: 0.74,
-      depthWrite: false,
-      envMapIntensity: 2.1,
-    }),
-    panels.length
-  );
+  const glassMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x1a2f45,
+    metalness: 0.9,
+    roughness: 0.07,
+    transparent: true,
+    opacity: 0.74,
+    depthWrite: false,
+    envMapIntensity: 2.1,
+  });
+  const glass = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), glassMaterial, panels.length);
   glass.frustumCulled = false;
   glass.renderOrder = 2;
   scene.add(glass);
@@ -417,9 +384,42 @@ export function createBuildScene(canvas) {
     camera.updateProjectionMatrix();
 
     // dawn breaks behind the tower as seen from the final camera position
-    const sunDir = new THREE.Vector3(-Math.sin(cfg.a1 - 0.35), 0, -Math.cos(cfg.a1 - 0.35)).normalize();
+    sunDir.set(-Math.sin(cfg.a1 - 0.35), 0, -Math.cos(cfg.a1 - 0.35)).normalize();
     sky.material.uniforms.uSun.value.copy(sunDir);
-    sun.position.copy(sunDir).multiplyScalar(40).setY(9);
+    placeSun();
+    force = true;
+  }
+
+  const sunDir = new THREE.Vector3(0, 0, -1);
+  function placeSun() {
+    // night: a low sun behind the tower. day: high and from the camera's side, so the frame reads
+    if (day) sun.position.set(-sunDir.x * 18 - sunDir.z * 26, 44, -sunDir.z * 18 + sunDir.x * 26);
+    else sun.position.copy(sunDir).multiplyScalar(40).setY(9);
+  }
+
+  /** Night forge or white cyclorama — follows the page theme. */
+  function setTheme(theme) {
+    day = theme === 'light';
+    scene.environment = day ? envDay : envNight;
+    scene.fog.color.copy(day ? PAPER : NIGHT);
+    sky.material.uniforms.uDay.value = day ? 1 : 0;
+    groundMaterial.color.set(day ? 0xcfcfcb : 0x0a0b0d);
+    groundMaterial.metalness = day ? 0 : 0.55;
+    groundMaterial.roughness = day ? 0.92 : 0.58;
+    grid.visible = !day;
+    gridDay.visible = day;
+    if (day) cityMaterial.color.setRGB(0.7, 0.71, 0.73);
+    else cityMaterial.color.set(0x030304);
+    ghostMaterial.color.set(day ? 0xb3600e : 0xf7ad45);
+    cStack.set(day ? 0x30333a : 0x5d6169);
+    cPlaced.set(day ? 0x4a4e56 : 0x9da3ad);
+    steel.material.envMapIntensity = day ? 0.8 : 0.95;
+    deckMaterial.color.set(day ? 0x6b6f76 : 0x23252a);
+    glassMaterial.color.set(day ? 0x20303d : 0x1a2f45);
+    glassMaterial.envMapIntensity = day ? 1.2 : 2.1;
+    fill.intensity = day ? 1.15 : 0.35;
+    sun.color.set(day ? 0xfff0dc : 0xffb060);
+    placeSun();
     force = true;
   }
 
@@ -541,11 +541,11 @@ export function createBuildScene(canvas) {
     const dawn = smoothstep(0.5, 1, p);
     const alive = smoothstep(TIME.lightsStart, 1, p);
 
-    ghostMaterial.opacity = smoothstep(0, 0.08, p) * (1 - smoothstep(0.45, 0.8, p)) * 0.3;
+    ghostMaterial.opacity = smoothstep(0, 0.08, p) * (1 - smoothstep(0.45, 0.8, p)) * (day ? 0.6 : 0.3);
     sky.material.uniforms.uDawn.value = dawn;
-    sun.intensity = dawn * 2.0;
-    spill.material.opacity = alive * 0.5;
-    renderer.toneMappingExposure = lerp(0.95, 1.12, dawn);
+    sun.intensity = day ? 1.3 + dawn * 0.9 : dawn * 2.0;
+    spill.material.opacity = day ? 0 : alive * 0.5;
+    renderer.toneMappingExposure = day ? 1.0 : lerp(0.95, 1.12, dawn);
 
     const crownT = easeOutCubic(clamp01((p - TIME.crownStart) / (TIME.crownEnd - TIME.crownStart)));
     crown.visible = crownT > 0;
@@ -612,6 +612,7 @@ export function createBuildScene(canvas) {
     onFrame(fn) {
       listener = fn;
     },
+    setTheme,
     dispose() {
       window.removeEventListener('pointermove', onPointer);
       observer.disconnect();

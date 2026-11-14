@@ -43,9 +43,9 @@ Tokens live in [`src/styles/tokens.css`](src/styles/tokens.css). Change a value 
 
 **Themes**
 
-The site has two themes, switched with the sun | moon control beside the logo. The choice is saved on the visitor's device; night is the default.
+The site has two themes, switched with the sun | moon control beside the logo. Day is the default; the choice is saved on the visitor's device.
 
-| | Night (default) | Day (`data-theme="light"` on `<html>`) |
+| | Night | Day (default, `data-theme="light"` on `<html>`) |
 |---|---|---|
 | Page | `#050506` | `#f6f6f4` |
 | Card | `#121316` | `#ffffff` |
@@ -53,8 +53,9 @@ The site has two themes, switched with the sun | moon control beside the logo. T
 | Accent as text | `#f7ad45` | `#a9590b` (deeper, to hold contrast on paper) |
 
 - The `--ink-*` and `--steel-*` scales swap ends between themes, so components are written once.
-- Add `.theme-night` to pin a subtree to the night palette. The preloader and the two 3D sequences use it: molten steel is always shot in the dark.
-- By day the logo mark sits on its own black cut plate; it is never placed directly on paper.
+- The two 3D sequences follow the theme. By night they are a forge at dawn; by day the same scenes play on a white cyclorama — paper sky and ground, graphite steel, a graphite car on a grey road — so the page never cuts to black.
+- `.theme-night` is available to pin a subtree to the night palette; nothing uses it at present.
+- By day the logo mark (nav, footer, preloader) sits on its own black cut plate; it is never placed directly on paper.
 
 ---
 

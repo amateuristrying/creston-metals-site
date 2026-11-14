@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   makeStudioEnv,
+  makeDawnSky,
+  PAPER,
+  NIGHT,
   glowTexture,
   clamp01,
   lerp,
@@ -405,44 +408,6 @@ function makeCoil(rand) {
   return { geometry, steps, pitch };
 }
 
-/** Night sky with a band of first light toward `uSun`. */
-function makeSky() {
-  const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(220, 32, 16),
-    new THREE.ShaderMaterial({
-      side: THREE.BackSide,
-      depthWrite: false,
-      fog: false,
-      uniforms: { uDawn: { value: 0 }, uSun: { value: new THREE.Vector3(1, 0, 0) } },
-      vertexShader: /* glsl */ `
-        varying vec3 vDir;
-        void main() {
-          vDir = position;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }`,
-      fragmentShader: /* glsl */ `
-        varying vec3 vDir;
-        uniform float uDawn;
-        uniform vec3 uSun;
-        void main() {
-          vec3 dir = normalize(vDir);
-          float h = max(dir.y, 0.0);
-          float toward = max(dot(normalize(vec3(dir.x, 0.0, dir.z)), uSun), 0.0);
-          vec3 night = vec3(0.004, 0.004, 0.006);
-          float band = exp(-h * mix(18.0, 12.5, uDawn));
-          vec3 ember = mix(vec3(0.16, 0.08, 0.03), vec3(1.0, 0.36, 0.08), uDawn);
-          vec3 glow = ember * band * mix(0.0, 0.62, uDawn) * mix(0.1, 1.0, pow(toward, 3.2));
-          vec3 high = vec3(0.016, 0.02, 0.045) * uDawn * (1.0 - exp(-h * 3.0)) + vec3(0.1, 0.05, 0.05) * uDawn * exp(-h * 3.5) * toward;
-          gl_FragColor = vec4(night + glow + high, 1.0);
-          #include <tonemapping_fragment>
-          #include <colorspace_fragment>
-        }`,
-    })
-  );
-  sky.frustumCulled = false;
-  return sky;
-}
-
 export function createAutoScene(canvas) {
   const rand = mulberry32(20261114);
   const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -453,27 +418,33 @@ export function createAutoScene(canvas) {
   renderer.toneMappingExposure = 1.0;
 
   const scene = new THREE.Scene();
-  scene.environment = makeStudioEnv(renderer);
-  scene.fog = new THREE.Fog(0x040405, 40, 150);
+  // two studios: the mill at night, and a white cyclorama for the day theme
+  const envNight = makeStudioEnv(renderer);
+  const envDay = makeStudioEnv(renderer, true);
+  scene.environment = envNight;
+  scene.fog = new THREE.Fog(NIGHT.clone(), 40, 150);
+  let day = false;
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 500);
 
-  const sky = makeSky();
+  const sky = makeDawnSky({ radius: 220, band: [18, 12.5], glow: [0, 0.62], floor: 0.1, focus: 3.2, ember: [1.0, 0.36, 0.08] });
   const sunDir = new THREE.Vector3(0.95, 0, -0.31).normalize();
   sky.material.uniforms.uSun.value.copy(sunDir);
   scene.add(sky);
 
+  const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x0a0b0d, metalness: 0.35, roughness: 0.7 });
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(190, 64),
-    new THREE.MeshStandardMaterial({ color: 0x0a0b0d, metalness: 0.35, roughness: 0.7 })
+    groundMaterial
   );
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
 
   /* ---------- a quiet city, ahead ---------- */
+  const cityMaterial = new THREE.MeshBasicMaterial({ color: 0x030304 });
   {
     const COUNT = 150;
-    const city = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0x030304 }), COUNT);
+    const city = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), cityMaterial, COUNT);
     const m = new THREE.Matrix4();
     const q = new THREE.Quaternion();
     for (let i = 0; i < COUNT; i++) {
@@ -573,7 +544,8 @@ export function createAutoScene(canvas) {
     for (let i = 0; i < STRIP_N - 1; i++) indices.push(i * 2, i * 2 + 1, i * 2 + 3, i * 2, i * 2 + 3, i * 2 + 2);
     stripGeometry.setIndex(indices);
   }
-  const strip = new THREE.Mesh(stripGeometry, new THREE.MeshStandardMaterial({ color: 0x6f747c, metalness: 1, roughness: 0.42, side: THREE.DoubleSide }));
+  const stripMaterial = new THREE.MeshStandardMaterial({ color: 0x6f747c, metalness: 1, roughness: 0.42, side: THREE.DoubleSide });
+  const strip = new THREE.Mesh(stripGeometry, stripMaterial);
   const stripHeat = new THREE.Mesh(
     stripGeometry,
     new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })
@@ -699,6 +671,7 @@ export function createAutoScene(canvas) {
     [-1.2, -0.16, M - F, M - E],
   ];
 
+  // raw steel off the press, and how it is finished: liquid silver at night, graphite by day
   const RAW = { color: new THREE.Color(0x8b9199), roughness: 0.5, env: 1.0 };
   const FINISH = { color: new THREE.Color(0xdfe2e6), roughness: 0.2, env: 1.55 };
 
@@ -922,7 +895,8 @@ export function createAutoScene(canvas) {
   const key = new THREE.DirectionalLight(0xdfe6ff, 0.55);
   key.position.set(3, 9, 7);
   scene.add(key);
-  scene.add(new THREE.HemisphereLight(0x8fa0c0, 0x100c08, 0.32));
+  const fill = new THREE.HemisphereLight(0x8fa0c0, 0x100c08, 0.32);
+  scene.add(fill);
 
   /* ---------- camera path ---------- */
   //            p     target x   target y   azimuth   distance   height
@@ -1044,8 +1018,8 @@ export function createAutoScene(canvas) {
     const leave = Math.atan2(dy, dx) + Math.acos(radius / Math.hypot(dx, dy));
     coil.rotation.z = leave - (start / COIL.perTurn) * Math.PI * 2;
     coilMaterial.color.setScalar(lerp(0.05, 1, heat) * (0.94 + Math.sin(time * 7.3) * 0.03 + Math.sin(time * 2.1) * 0.03));
-    coilGlow.material.opacity = 0.5 * heat;
-    coilLight.intensity = 260 * heat * (0.9 + Math.sin(time * 5.1) * 0.1);
+    coilGlow.material.opacity = 0.5 * heat * (day ? 0.3 : 1);
+    coilLight.intensity = (day ? 110 : 260) * heat * (0.9 + Math.sin(time * 5.1) * 0.1);
 
     // strip
     const feed = easeInOutCubic(clamp01((p - TIME.feedStart) / (TIME.feedEnd - TIME.feedStart)));
@@ -1076,7 +1050,7 @@ export function createAutoScene(canvas) {
     // press
     ram.position.y = lerp(2.8, TABLE_Y + 0.36, stamp);
     ramMaterial.emissiveIntensity = stamp * 0.7;
-    pressLight.intensity = 150 * stamp;
+    pressLight.intensity = (day ? 70 : 150) * stamp;
 
     const fly = (set, ox, oy, oz, spread, strength) => {
       const points = set.points.geometry.attributes.position;
@@ -1115,8 +1089,8 @@ export function createAutoScene(canvas) {
     const coreT = easeOutCubic(clamp01((p - TIME.coreStart) / (TIME.coreEnd - TIME.coreStart)));
     core.visible = coreT > 0;
     core.scale.set(1, Math.max(coreT, 0.001), 1);
-    ghostMaterial.opacity = coreT * (1 - smoothstep(0.5, 0.66, p)) * 0.5;
-    shadow.material.opacity = coreT * 0.9;
+    ghostMaterial.opacity = coreT * (1 - smoothstep(0.5, 0.66, p)) * (day ? 0.75 : 0.5);
+    shadow.material.opacity = coreT * (day ? 0.5 : 0.9);
 
     // wheels roll in from the press, then turn with the road
     for (const w of wheels) {
@@ -1132,9 +1106,9 @@ export function createAutoScene(canvas) {
     trim.visible = p > TIME.glassStart;
     headMaterial.color.setRGB(lerp(0.02, 5.2, lit), lerp(0.02, 4.4, lit), lerp(0.025, 3.2, lit));
     tailMaterial.color.setRGB(lerp(0.03, 1.7, lit), lerp(0.006, 0.07, lit), lerp(0.004, 0.015, lit));
-    headGlows.forEach((g) => (g.material.opacity = lit * 0.95));
-    tailGlow.material.opacity = lit * 0.7;
-    beam.material.opacity = lit * 0.42;
+    headGlows.forEach((g) => (g.material.opacity = lit * (day ? 0.5 : 0.95)));
+    tailGlow.material.opacity = lit * (day ? 0.35 : 0.7);
+    beam.material.opacity = day ? 0 : lit * 0.42;
 
     // road
     const roadT = smoothstep(0.66, 0.76, p);
@@ -1144,8 +1118,8 @@ export function createAutoScene(canvas) {
       paint.opacity = roadT * 0.85;
       studMaterial.opacity = roadT;
       headsMaterial.opacity = roadT;
-      poolMaterial.opacity = roadT * 0.3;
-      halos.material.opacity = roadT * 0.9;
+      poolMaterial.opacity = day ? 0 : roadT * 0.3;
+      halos.material.opacity = day ? 0 : roadT * 0.9;
       updateRoad(travel);
     }
 
@@ -1154,8 +1128,8 @@ export function createAutoScene(canvas) {
 
     const dawn = smoothstep(0.7, 1, p);
     sky.material.uniforms.uDawn.value = dawn;
-    sun.intensity = dawn * 1.25;
-    renderer.toneMappingExposure = lerp(1.0, 1.08, dawn);
+    sun.intensity = day ? 1.3 + dawn * 0.7 : dawn * 1.25;
+    renderer.toneMappingExposure = day ? 1.0 : lerp(1.0, 1.08, dawn);
 
     info.speed = Math.round(96 * Math.min(1, drive * 1.12));
 
@@ -1202,12 +1176,60 @@ export function createAutoScene(canvas) {
     if (listener) listener(info);
   }
 
+  /** Night mill or white cyclorama — follows the page theme. */
+  function setTheme(theme) {
+    day = theme === 'light';
+    scene.environment = day ? envDay : envNight;
+    scene.fog.color.copy(day ? PAPER : NIGHT);
+    sky.material.uniforms.uDay.value = day ? 1 : 0;
+    groundMaterial.color.set(day ? 0xcfcfcb : 0x0a0b0d);
+    groundMaterial.metalness = day ? 0 : 0.35;
+    groundMaterial.roughness = day ? 0.92 : 0.7;
+    if (day) cityMaterial.color.setRGB(0.7, 0.71, 0.73);
+    else cityMaterial.color.set(0x030304);
+
+    // mill
+    iron.color.set(day ? 0x3a3d43 : 0x2b2d32);
+    ironDark.color.set(day ? 0x25272b : 0x17181b);
+    stripMaterial.color.set(day ? 0x474b52 : 0x6f747c);
+    stripHeat.material.color.setScalar(day ? 0.5 : 1);
+    for (const set of [coilSparks, pressSparks]) {
+      // additive sparks vanish on paper: by day they are solid embers
+      set.points.material.blending = day ? THREE.NormalBlending : THREE.AdditiveBlending;
+      set.points.material.color.setRGB(...(day ? [1.5, 0.5, 0.06] : [2.3, 1.6, 0.85]));
+      set.points.material.needsUpdate = true;
+    }
+
+    // car
+    ghostMaterial.color.set(day ? 0xb3600e : 0xf7ad45);
+    RAW.color.set(day ? 0x767c85 : 0x8b9199);
+    FINISH.color.set(day ? 0x23262b : 0xdfe2e6);
+    FINISH.roughness = day ? 0.24 : 0.2;
+    FINISH.env = day ? 1.25 : 1.55;
+    panels.forEach((panel) => (panel.lastPaint = -1));
+
+    // road
+    asphalt.color.set(day ? 0x45474c : 0x101114);
+    asphalt.roughness = day ? 0.9 : 0.8;
+    if (day) paint.color.setRGB(1.9, 1.9, 1.86);
+    else paint.color.set(0x9a9ea6);
+    headsMaterial.color.setRGB(...(day ? [0.5, 0.5, 0.52] : [3.4, 2.3, 1.1])); // lamps are off by day
+
+    // light
+    fill.intensity = day ? 1.15 : 0.32;
+    key.intensity = day ? 0.9 : 0.55;
+    sun.color.set(day ? 0xfff0dc : 0xffb060);
+    if (day) sun.position.set(14, 42, 26);
+    else sun.position.copy(sunDir).multiplyScalar(40).setY(8);
+  }
+
   // draw one frame immediately so the canvas is never blank
   apply(0, 0, 0);
   renderer.render(scene, camera);
 
   return {
     frame,
+    setTheme,
     setProgress(value) {
       goal = clamp01(value);
     },

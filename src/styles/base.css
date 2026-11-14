@@ -760,3 +760,10 @@ h3 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* by day the preloader mark sits on its own black cut plate, like the nav mark */
+[data-theme='light'] .preloader__mark {
+  padding: 14px;
+  background: #050506;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+}

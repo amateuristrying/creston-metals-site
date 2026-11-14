@@ -117,7 +117,7 @@ async function start() {
   // split text needs final glyph metrics
   await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 2500))]);
 
-  initTheme((theme) => hero?.setTheme(theme));
+  initTheme((theme) => [hero, build, drive].forEach((scene) => scene?.setTheme(theme)));
   initRollLinks();
   initButtons();
   initMagnetic();
