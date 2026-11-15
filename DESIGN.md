@@ -55,7 +55,7 @@ The site has two themes, switched with the sun | moon control beside the logo. D
 - The `--ink-*` and `--steel-*` scales swap ends between themes, so components are written once.
 - The two 3D sequences follow the theme. By night they are a forge at dawn; by day the same scenes play on a white cyclorama — paper sky and ground, graphite steel, a graphite car on a grey road — so the page never cuts to black.
 - `.theme-night` is available to pin a subtree to the night palette; nothing uses it at present.
-- By day the logo mark (nav, footer, preloader) sits on its own black cut plate; it is never placed directly on paper.
+- The logo mark has a cut for each theme: silver steel on ink by night (`logo-mark.webp`), graphite steel with the same gold ribbon on paper by day (`logo-mark-day.webp`). Neither sits on a plate.
 
 ---
 
@@ -148,6 +148,6 @@ Short. Declarative. Concrete nouns — *billets, bridges, weighment* — over ab
 
 ## 8. Logo
 
-- Files: `public/logo-mark.png` (transparent, for dark surfaces), `public/logo-full.webp` (original, on black), `public/favicon.png`.
-- Only ever on ink. Clear space = half the mark's width on every side.
+- Files: `public/logo-mark.png` / `.webp` (transparent, for dark surfaces), `public/logo-mark-day.webp` (transparent, graphite steel, for light surfaces), `public/logo-full.webp` (original, on black), `public/favicon.png`.
+- The silver mark only ever on ink; the graphite mark only ever on paper. Clear space = half the mark's width on every side.
 - The wordmark is **CRESTON** in Archivo, width 125, weight 700, tracking 0.22em, with **METALS** beneath in mono.

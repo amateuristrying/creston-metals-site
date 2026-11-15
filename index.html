@@ -14,7 +14,7 @@
     <meta property="og:image" content="/logo-full.webp" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" as="image" href="/logo-mark.webp" />
+    <link rel="preload" as="image" href="/logo-mark-day.webp" />
     <!-- apply a saved theme before first paint -->
     <script>
       try {
@@ -28,7 +28,8 @@
     <!-- Preloader -->
     <div class="preloader" aria-hidden="true">
       <div class="preloader__inner">
-        <img class="preloader__mark" src="/logo-mark.webp" alt="" width="320" height="320" />
+        <img class="preloader__mark mark--day" src="/logo-mark-day.webp" alt="" width="320" height="320" />
+        <img class="preloader__mark mark--night" src="/logo-mark.webp" alt="" width="320" height="320" loading="lazy" />
         <div class="preloader__row">
           <span class="preloader__label">Creston Metals</span>
           <span class="preloader__count"><span data-preloader-count>000</span>%</span>
@@ -48,7 +49,8 @@
     <header class="nav" data-nav>
       <div class="nav__start">
         <a class="brand" href="#top" aria-label="Creston Metals — home" data-magnetic="0.2">
-          <img src="/logo-mark.webp" alt="" width="44" height="44" />
+          <img class="mark--day" src="/logo-mark-day.webp" alt="" width="44" height="44" />
+          <img class="mark--night" src="/logo-mark.webp" alt="" width="44" height="44" loading="lazy" />
           <span class="brand__word">Creston<small>Metals</small></span>
         </a>
         <button
@@ -430,7 +432,8 @@
     <footer class="footer">
       <div class="container footer__top">
         <a class="brand" href="#top" aria-label="Back to top">
-          <img src="/logo-mark.webp" alt="" width="44" height="44" loading="lazy" />
+          <img class="mark--day" src="/logo-mark-day.webp" alt="" width="44" height="44" loading="lazy" />
+          <img class="mark--night" src="/logo-mark.webp" alt="" width="44" height="44" loading="lazy" />
           <span class="brand__word">Creston<small>Metals</small></span>
         </a>
         <nav class="footer__nav" aria-label="Footer">

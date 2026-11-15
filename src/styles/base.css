@@ -441,11 +441,10 @@ h3 {
   transition: transform 0.9s var(--ease-out);
 }
 
-/* the mark is only ever shown on ink: by day it sits on its own cut plate */
-[data-theme='light'] .brand img {
-  padding: 4px;
-  background: #050506;
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+/* the mark has two cuts: silver steel for ink, graphite steel for paper */
+:root:not([data-theme='light']) .mark--day,
+[data-theme='light'] .mark--night {
+  display: none;
 }
 
 .nav__start {
@@ -759,11 +758,4 @@ h3 {
   *::after {
     transition-duration: 0.01ms !important;
   }
-}
-
-/* by day the preloader mark sits on its own black cut plate, like the nav mark */
-[data-theme='light'] .preloader__mark {
-  padding: 14px;
-  background: #050506;
-  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
 }
