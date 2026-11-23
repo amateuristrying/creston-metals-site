@@ -192,6 +192,7 @@ export function initMetals() {
       scrollTrigger: {
         trigger: '.metals',
         pin: '.metals__pin',
+        refreshPriority: 10,
         start: 'top top',
         end: () => `+=${distance()}`,
         scrub: 0.8,
@@ -250,105 +251,65 @@ export function initMetals() {
 /* ---------- pinned 3D sequences (stockyard → skyline, coil → open road) ---------- */
 function initSequence(root, scene, { thresholds, read, estimate, pads, length }) {
   const steps = $$('[data-step]', root);
+  const stages = $$('[data-stage]', root);
   const readA = $('[data-hud-a]', root);
   const readB = $('[data-hud-b]', root);
   const bar = $('[data-hud-bar]', root);
-  const head = $('.seq__head', root);
+  const percent = $('[data-seq-percent]', root);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v) => Math.max(0, Math.min(1, v));
   let current = -1;
-  let lastA = -1;
-  let lastB = -1;
-
-  const showStep = (index) => {
-    if (index === current) return;
-    const previous = steps[current];
-    const next = steps[index];
-    const direction = index > current ? 1 : -1;
-    current = index;
-    // hide every other caption, not just the last one: a fast scroll can pass several at once
-    steps.forEach((step) => {
-      if (step === next) return;
-      if (step === previous) gsap.to(step, { autoAlpha: 0, y: -24 * direction, duration: 0.4, ease: 'power2.in', overwrite: true });
-      else gsap.set(step, { autoAlpha: 0, overwrite: true });
-    });
-    gsap.fromTo(
-      next,
-      { autoAlpha: 0, y: 36 * direction },
-      { autoAlpha: 1, y: 0, duration: 0.9, ease: 'expo.out', delay: previous ? 0.18 : 0, overwrite: true }
-    );
-    gsap.fromTo(
-      next.children,
-      { y: 22 * direction, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.07, delay: previous ? 0.2 : 0 }
-    );
-  };
 
   const update = (p, a, b) => {
     let index = 0;
-    thresholds.forEach((threshold, i) => p >= threshold && (index = i));
-    showStep(index);
-    if (a !== lastA) readA.textContent = pad((lastA = a), pads[0]);
-    if (b !== lastB) readB.textContent = pad((lastB = b), pads[1]);
-    bar.style.transform = `scaleX(${p.toFixed(4)})`;
+    thresholds.forEach((threshold, i) => { if (p >= threshold) index = i; });
+    steps.forEach((step, i) => {
+      const start = thresholds[i];
+      const end = thresholds[i + 1] ?? 1;
+      // Both the text and geometry seek to this exact scroll position. No timed tweens.
+      const enter = i === 0 ? 1 : clamp((p - start + 0.015) / 0.03);
+      const leave = i === steps.length - 1 ? 1 : clamp((end - p + 0.015) / 0.03);
+      const opacity = reduced ? Number(i === index) : Math.min(enter, leave);
+      step.style.opacity = opacity;
+      step.style.visibility = opacity > 0 ? 'visible' : 'hidden';
+      step.style.transform = reduced ? 'none' : `translateY(${((leave - enter) * 24).toFixed(2)}px)`;
+      stages[i].style.setProperty('--stage-progress', clamp((p - start) / (end - start)));
+      if (index !== current) {
+        step.setAttribute('aria-hidden', String(i !== index));
+        stages[i].classList.toggle('is-complete', i < index);
+        if (i === index) stages[i].setAttribute('aria-current', 'step');
+        else stages[i].removeAttribute('aria-current');
+      }
+    });
+    current = index;
+    readA.textContent = pad(a, pads[0]);
+    readB.textContent = pad(b, pads[1]);
+    percent.textContent = `${Math.round(p * 100)}%`;
+    bar.style.transform = `scaleX(${p})`;
   };
-
-  const isPhone = () => window.innerWidth < 760;
 
   if (scene) {
     scene.onFrame((info) => update(info.p, ...read(info)));
-    // only render while the section is anywhere near the screen
     new IntersectionObserver(([entry]) => scene.setActive(entry.isIntersecting), { rootMargin: '20% 0px' }).observe(root);
   }
 
+  const sync = (p) => {
+    if (scene) scene.setProgress(p);
+    else update(p, ...estimate(p));
+  };
+  update(0, ...estimate(0));
   ScrollTrigger.create({
     trigger: root,
     pin: $('.seq__pin', root),
+    // Re-measure after the desktop metals pin, including when crossing a breakpoint.
+    refreshPriority: root.id === 'build' ? 9 : 8,
     start: 'top top',
-    end: () => `+=${window.innerHeight * (isPhone() ? length[1] : length[0])}`,
+    end: () => `+=${window.innerHeight * (window.innerWidth < 760 ? length[1] : length[0])}`,
     scrub: true,
     anticipatePin: 1,
     invalidateOnRefresh: true,
-    onUpdate(self) {
-      if (scene) scene.setProgress(self.progress);
-      else update(self.progress, ...estimate(self.progress));
-    },
-  });
-
-  showStep(0);
-
-  // on phones the headline steps aside once the sequence is under way
-  gsap.matchMedia().add('(max-width: 720px)', () => {
-    gsap.fromTo(
-      head,
-      { autoAlpha: 1, y: 0 },
-      {
-        autoAlpha: 0,
-        y: -30,
-        ease: 'none',
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: root,
-          start: () => `top+=${window.innerHeight * 0.35} top`,
-          end: () => `top+=${window.innerHeight * 0.75} top`,
-          scrub: true,
-        },
-      }
-    );
-  });
-
-  gsap.from(head.children, {
-    y: 40,
-    opacity: 0,
-    duration: 1.2,
-    ease: 'expo.out',
-    stagger: 0.1,
-    scrollTrigger: { trigger: root, start: 'top 55%', once: true },
-  });
-  gsap.from($('.seq__hud', root), {
-    opacity: 0,
-    y: 20,
-    duration: 1,
-    ease: 'expo.out',
-    scrollTrigger: { trigger: root, start: 'top 30%', once: true },
+    onUpdate: (self) => sync(self.progress),
+    onRefresh: (self) => sync(self.progress),
   });
 }
 
@@ -358,7 +319,7 @@ export function initBuild(scene) {
     read: (info) => [info.placed, info.floor],
     estimate: (p) => [Math.round(p * 560), Math.round(p * 14)],
     pads: [3, 2],
-    length: [4.4, 3.4],
+    length: [6, 5],
   });
 }
 
@@ -371,7 +332,7 @@ export function initDrive(scene) {
       Math.round(Math.min(1, Math.max(0, (p - 0.74) / 0.26)) * 96),
     ],
     pads: [2, 3],
-    length: [5.2, 4],
+    length: [6.5, 5.5],
   });
 }
 

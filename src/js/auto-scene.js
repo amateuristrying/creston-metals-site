@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createScrollDriver } from './scroll-driver.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   makeStudioEnv,
@@ -47,7 +48,7 @@ const TIME = {
   driveStart: 0.74,
 };
 
-export const AUTO_STEPS = [0, 0.11, 0.32, 0.74];
+export const AUTO_STEPS = [0, 0.08, 0.27, 0.44, 0.59, 0.74];
 export const AUTO_PANELS = 21;
 
 /* ---------- the car, as numbers ---------- */
@@ -411,6 +412,13 @@ function makeCoil(rand) {
 export function createAutoScene(canvas) {
   const rand = mulberry32(20261114);
   const coarse = window.matchMedia('(pointer: coarse)').matches;
+  let listener = null;
+  const playback = createScrollDriver((p, time) => {
+    apply(p, time);
+    renderer.render(scene, camera);
+    info.p = p;
+    listener?.(info);
+  });
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.75 : 2));
@@ -932,16 +940,15 @@ export function createAutoScene(canvas) {
       Object.assign(rig, { reach: 1, drop: 0, rise: 0 });
     }
     camera.updateProjectionMatrix();
+    playback.invalidate();
   }
 
   /* ---------- per-frame update ---------- */
   const info = { p: 0, panels: 0, speed: 0 };
-  const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
   const target = new THREE.Vector3();
   const colour = new THREE.Color();
   const BLANK = new THREE.Vector3(PRESS_X, TABLE_Y + 0.03, 0);
   const HOLD = 0.16; // share of a panel's time spent under the ram
-  let cruise = 0;
   let stamp = 0;
 
   function updatePanels(p) {
@@ -1070,14 +1077,13 @@ export function createAutoScene(canvas) {
     fly(pressSparks, PRESS_X, TABLE_Y + 0.05, 0, 1.5, stamp);
   }
 
-  function apply(p, time, dt) {
+  function apply(p, time) {
     updatePanels(p);
 
     const heat = 1 - smoothstep(0.64, 0.78, p);
     const drive = clamp01((p - TIME.driveStart) / (1 - TIME.driveStart));
     const base = 190 * drive * drive;
-    cruise += dt * 13 * smoothstep(0.84, 0.96, p);
-    const travel = base + cruise;
+    const travel = base;
 
     mill.visible = base < 150;
     if (mill.visible) {
@@ -1134,47 +1140,20 @@ export function createAutoScene(canvas) {
     info.speed = Math.round(96 * Math.min(1, drive * 1.12));
 
     // camera
-    pointer.x = lerp(pointer.x, pointer.tx, 0.05);
-    pointer.y = lerp(pointer.y, pointer.ty, 0.05);
-    const azimuth = shot.az(p) + pointer.x * 0.06 + Math.sin(time * 0.2) * 0.01;
+    const azimuth = shot.az(p);
     const distance = shot.dist(p) * rig.reach;
     target.set(shot.tx(p), shot.ty(p) - rig.drop * (distance / 12), 0);
     camera.position.set(
       target.x + Math.sin(azimuth) * distance,
-      shot.cy(p) + rig.rise - pointer.y * 0.35,
+      shot.cy(p) + rig.rise,
       target.z + Math.cos(azimuth) * distance
     );
     camera.lookAt(target);
   }
 
-  const onPointer = (e) => {
-    pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
-    pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
-  };
-  window.addEventListener('pointermove', onPointer, { passive: true });
-
   const observer = new ResizeObserver(layout);
   observer.observe(canvas);
   layout();
-
-  let goal = 0;
-  let current = 0;
-  let active = false;
-  let listener = null;
-  let lastNow = performance.now();
-
-  function frame(now) {
-    const dt = Math.min(1, (now - lastNow) / 1000);
-    lastNow = now;
-    if (!active) return;
-    // frame-rate independent easing toward the scroll position
-    current += (goal - current) * (1 - Math.exp(-dt * 9));
-    if (Math.abs(goal - current) < 0.0002) current = goal;
-    apply(current, now / 1000, Math.min(dt, 0.1));
-    renderer.render(scene, camera);
-    info.p = current;
-    if (listener) listener(info);
-  }
 
   /** Night mill or white cyclorama — follows the page theme. */
   function setTheme(theme) {
@@ -1221,26 +1200,27 @@ export function createAutoScene(canvas) {
     sun.color.set(day ? 0xfff0dc : 0xffb060);
     if (day) sun.position.set(14, 42, 26);
     else sun.position.copy(sunDir).multiplyScalar(40).setY(8);
+    playback.invalidate();
   }
 
   // draw one frame immediately so the canvas is never blank
-  apply(0, 0, 0);
-  renderer.render(scene, camera);
+  playback.setActive(true);
+  playback.frame();
+  playback.setActive(false);
 
   return {
-    frame,
+    frame: playback.frame,
     setTheme,
     setProgress(value) {
-      goal = clamp01(value);
+      playback.setProgress(value);
     },
     setActive(value) {
-      active = value;
+      playback.setActive(value);
     },
     onFrame(fn) {
       listener = fn;
     },
     dispose() {
-      window.removeEventListener('pointermove', onPointer);
       observer.disconnect();
       renderer.dispose();
     },

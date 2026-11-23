@@ -108,7 +108,7 @@ The site has two themes, switched with the sun | moon control beside the logo. D
 | **Metal tile** | Chamfered periodic-table card: number, symbol, name, forms, grade. 3D tilt and a sheen that follows the pointer. |
 | **Row link** | Full-width list row. Hover wipes ember from the edge the pointer came in on. |
 | **Field** | Underline-only input, floating mono label, ember underline on focus. |
-| **HUD readout** | Mono key/value pairs over the 3D sequence. |
+| **HUD readout** | Mono key/value pairs beneath a six-stage process timeline, over the 3D background. |
 
 ---
 
@@ -127,7 +127,7 @@ Built on **GSAP** (ScrollTrigger, SplitText) with **Lenis** smooth scrolling, an
 **Rules**
 
 - Text enters by rising out of a mask, line by line (stagger 0.08s). It never fades in flat.
-- Scroll-linked motion is scrubbed — the user's hand is the timeline.
+- Scroll-linked motion is scrubbed — the user's hand is the timeline. Building and car sequences are full-section backgrounds beneath six foreground process chapters. Geometry, camera, road, sparks, chapter transitions and stage progress all seek to the same scroll position. No autoplay or pointer drift; stopping scroll holds the frame, and reversing scroll restores the earlier state.
 - Hover feedback starts within 100ms and follows the pointer's position.
 - `prefers-reduced-motion`: smooth scroll, cursor, preloader and reveals are disabled; content is simply there.
 

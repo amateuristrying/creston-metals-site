@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createScrollDriver } from './scroll-driver.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   makeStudioEnv,
@@ -48,7 +49,7 @@ const TIME = {
   lightsSpan: 0.09,
 };
 
-export const BUILD_STEPS = [0, 0.12, 0.58, 0.87];
+export const BUILD_STEPS = [0, 0.12, 0.35, 0.56, 0.8, 0.87];
 export const BUILD_MEMBERS = FLOORS * ((NX + 1) * (NZ + 1) + NX * (NZ + 1) + NZ * (NX + 1));
 export const BUILD_FLOORS = FLOORS;
 
@@ -65,6 +66,13 @@ function iBeamGeometry() {
 export function createBuildScene(canvas) {
   const rand = mulberry32(20261112);
   const coarse = window.matchMedia('(pointer: coarse)').matches;
+  let listener = null;
+  const playback = createScrollDriver((p, time) => {
+    apply(p, time);
+    renderer.render(scene, camera);
+    info.p = p;
+    listener?.(info);
+  });
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.75 : 2));
@@ -388,6 +396,7 @@ export function createBuildScene(canvas) {
     sky.material.uniforms.uSun.value.copy(sunDir);
     placeSun();
     force = true;
+    playback.invalidate();
   }
 
   const sunDir = new THREE.Vector3(0, 0, -1);
@@ -421,6 +430,7 @@ export function createBuildScene(canvas) {
     sun.color.set(day ? 0xfff0dc : 0xffb060);
     placeSun();
     force = true;
+    playback.invalidate();
   }
 
   /* ---------- per-frame update ---------- */
@@ -432,7 +442,6 @@ export function createBuildScene(canvas) {
   const target = new THREE.Vector3();
   const ZERO_SCALE = new THREE.Vector3(0, 0, 0);
   const info = { p: 0, placed: 0, floor: 0 };
-  const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 
   function updateSteel(p) {
     let placed = 0;
@@ -555,66 +564,39 @@ export function createBuildScene(canvas) {
     if (beacon.visible) beacon.scale.setScalar(0.7 + (Math.sin(time * 3.2) * 0.5 + 0.5) * 0.9);
 
     // camera: a slow orbit that pulls back and rises as the tower does
-    pointer.x = lerp(pointer.x, pointer.tx, 0.05);
-    pointer.y = lerp(pointer.y, pointer.ty, 0.05);
-    const angle = lerp(cfg.a0, cfg.a1, p) + pointer.x * 0.07 + Math.sin(time * 0.2) * 0.012;
+    const angle = lerp(cfg.a0, cfg.a1, p);
     const dist = lerp(cfg.d0, cfg.d1, easeInOutCubic(p));
     target.lerpVectors(cfg.from, cfg.to, smoothstep(0.04, 0.6, p));
     camera.position.set(
       target.x + Math.sin(angle) * dist,
-      lerp(cfg.y0, cfg.y1, p) - pointer.y * 0.5,
+      lerp(cfg.y0, cfg.y1, p),
       target.z + Math.cos(angle) * dist
     );
     camera.lookAt(target);
   }
 
-  const onPointer = (e) => {
-    pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
-    pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
-  };
-  window.addEventListener('pointermove', onPointer, { passive: true });
-
   const observer = new ResizeObserver(layout);
   observer.observe(canvas);
   layout();
 
-  let goal = 0;
-  let current = 0;
-  let active = false;
-  let listener = null;
-
-  let lastNow = performance.now();
-  function frame(now) {
-    const dt = Math.min(1, (now - lastNow) / 1000);
-    lastNow = now;
-    if (!active) return;
-    // frame-rate independent easing toward the scroll position
-    current += (goal - current) * (1 - Math.exp(-dt * 9));
-    if (Math.abs(goal - current) < 0.0002) current = goal;
-    apply(current, now / 1000);
-    renderer.render(scene, camera);
-    info.p = current;
-    if (listener) listener(info);
-  }
-
   // draw one frame immediately so the canvas is never blank
-  apply(0, 0);
-  renderer.render(scene, camera);
+  playback.setActive(true);
+  playback.frame();
+  playback.setActive(false);
 
   return {
-    frame,
+    frame: playback.frame,
     setProgress(value) {
-      goal = clamp01(value);
+      playback.setProgress(value);
     },
     setActive(value) {
-      active = value;
+      playback.setActive(value);
     },
     onFrame(fn) {
       listener = fn;
     },
     setTheme,
     dispose() {
-      window.removeEventListener('pointermove', onPointer);
       observer.disconnect();
       renderer.dispose();
     },
