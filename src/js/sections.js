@@ -452,6 +452,7 @@ export function initOutro() {
   });
 
   const word = $('[data-footer-word]');
+  if (!word) return;
   const split = SplitText.create(word, { type: 'chars', charsClass: 'char', aria: 'none' });
   gsap.from(split.chars, {
     yPercent: 105,

@@ -48,7 +48,7 @@ export function renderContent() {
   const email = $('[data-contact-email]');
   email.textContent = CONTACT_EMAIL;
   email.href = `mailto:${CONTACT_EMAIL}`;
-  $('[data-year]').textContent = new Date().getFullYear();
+  $$('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
 }
 
 /* ---------- theme switch: night / day ---------- */

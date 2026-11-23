@@ -4,8 +4,7 @@
  * confirm against what Creston actually stocks before launch.
  */
 
-// TODO(launch): replace with the real enquiry address.
-export const CONTACT_EMAIL = 'hello@crestonmetals.in';
+export const CONTACT_EMAIL = 'hello@crestonmetals.com';
 
 export const METALS = [
   {

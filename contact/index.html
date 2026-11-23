@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en-IN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Request a quote — Creston Metals</title>
+    <meta
+      name="description"
+      content="Request a quote for steel, copper, aluminium and other metals. Contact Creston Metals in Dadra and Nagar Haveli."
+    />
+    <meta name="theme-color" content="#f6f6f4" />
+    <meta property="og:title" content="Creston Metals" />
+    <meta property="og:description" content="Ferrous and non-ferrous commodities for the builders of India." />
+    <meta property="og:image" content="/logo-full.webp" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" as="image" href="/logo-mark-day.webp" />
+    <!-- apply a saved theme before first paint -->
+    <script>
+      try {
+        if (localStorage.getItem('creston-theme') === 'dark') delete document.documentElement.dataset.theme;
+      } catch (e) {}
+    </script>
+    <script type="module" src="/src/quote.js"></script>
+  </head>
+
+  <body class="quote-page" id="top">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="nav" data-nav>
+      <div class="nav__start">
+        <a class="brand" href="/#top" aria-label="Creston Metals — home" data-magnetic="0.2">
+          <img class="mark--day" src="/logo-mark-day.webp" alt="" width="44" height="44" />
+          <img class="mark--night" src="/logo-mark.webp" alt="" width="44" height="44" loading="lazy" />
+          <span class="brand__word">Creston<small>Metals</small></span>
+        </a>
+        <button
+          class="theme-toggle"
+          type="button"
+          role="switch"
+          aria-checked="true"
+          aria-label="Light theme"
+          data-theme-toggle
+          data-magnetic="0.25"
+        >
+          <span class="theme-toggle__thumb" aria-hidden="true"></span>
+          <span class="theme-toggle__cell theme-toggle__cell--sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" />
+            </svg>
+          </span>
+          <span class="theme-toggle__cell theme-toggle__cell--moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.2 8.2 0 1 0 10.2 10.2Z" /></svg>
+          </span>
+        </button>
+      </div>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="/#about" data-roll>About</a>
+        <a href="/#metals" data-roll>Metals</a>
+        <a href="/#build" data-roll>Impact</a>
+        <a href="/#industries" data-roll>Industries</a>
+        <a href="/#process" data-roll>Process</a>
+      </nav>
+      <a class="btn btn--ghost nav__cta" href="#enquiry" data-magnetic data-btn>
+        <span class="btn__fill"></span>
+        <span class="btn__label">Request a quote</span>
+        <span class="btn__icon" aria-hidden="true">↗</span>
+      </a>
+      <button class="nav__burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <div class="menu" id="menu" aria-hidden="true">
+      <div class="menu__bg"></div>
+      <nav class="menu__links" aria-label="Mobile">
+        <a href="/#about"><span class="menu__no">01</span><span class="menu__txt">About</span></a>
+        <a href="/#metals"><span class="menu__no">02</span><span class="menu__txt">Metals</span></a>
+        <a href="/#build"><span class="menu__no">03</span><span class="menu__txt">Impact</span></a>
+        <a href="/#industries"><span class="menu__no">04</span><span class="menu__txt">Industries</span></a>
+        <a href="/#process"><span class="menu__no">05</span><span class="menu__txt">Process</span></a>
+        <a href="#enquiry"><span class="menu__no">06</span><span class="menu__txt">Request a quote</span></a>
+      </nav>
+      <p class="menu__foot">Ferrous &amp; non-ferrous commodities · India</p>
+    </div>
+
+    <main id="main">
+      <section class="quote-intro container" id="enquiry" aria-labelledby="quote-title">
+        <div class="quote-copy">
+          <p class="quote-eyebrow">Write to us</p>
+          <h1 id="quote-title">Tell us about<br />your <em>requirement.</em></h1>
+          <p class="quote-lede">Share the metal, grade, quantity and delivery location. We’ll come back with availability, pricing and a clear next step.</p>
+          <dl class="quote-details">
+            <div><dt>Sales &amp; operations</dt><dd><a href="tel:+919265068741">+91 92650 68741</a></dd></div>
+            <div><dt>Procurement desk</dt><dd><a href="tel:+919265068741">+91 92650 68741</a></dd></div>
+            <div><dt>Email</dt><dd><a href="mailto:hello@crestonmetals.com">hello@crestonmetals.com</a></dd></div>
+          </dl>
+          <p class="quote-footnote">Ferrous &amp; non-ferrous metals.<br />One desk, from enquiry to delivery.</p>
+        </div>
+        <form class="quote-form" data-quote-form>
+          <div class="quote-field quote-field--full">
+            <label for="q-interest">What can we help you with? <span aria-hidden="true">*</span></label>
+            <select id="q-interest" name="interest" required>
+              <option value="" disabled selected>Select your requirement</option>
+              <option>Ferrous metals</option><option>Non-ferrous metals</option><option>Ferrous &amp; non-ferrous metals</option><option>Procurement / supply partnership</option><option>Other enquiry</option>
+            </select>
+          </div>
+          <div class="quote-field"><label for="q-first">First name *</label><input id="q-first" name="firstName" autocomplete="given-name" required maxlength="80" /></div>
+          <div class="quote-field"><label for="q-last">Last name *</label><input id="q-last" name="lastName" autocomplete="family-name" required maxlength="80" /></div>
+          <div class="quote-field"><label for="q-company">Company name</label><input id="q-company" name="company" autocomplete="organization" maxlength="160" /></div>
+          <div class="quote-field"><label for="q-email">Company email *</label><input id="q-email" name="email" type="email" autocomplete="email" required maxlength="254" /></div>
+          <div class="quote-field quote-field--full"><label for="q-phone">Phone number *</label><div class="quote-phone"><span>+91</span><input id="q-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" pattern="[+]?[0-9][0-9 ]{5,18}[0-9]" title="Enter 7–20 digits and spaces, with an optional + country code." required aria-describedby="phone-hint" /></div><small id="phone-hint">For a number outside India, include your country code.</small></div>
+          <div class="quote-field"><label for="q-country">Country *</label><input id="q-country" name="country" autocomplete="country-name" list="countries" value="India" required maxlength="100" /><datalist id="countries"><option value="India"></option><option value="United Arab Emirates"></option><option value="Singapore"></option><option value="United Kingdom"></option><option value="United States"></option></datalist></div>
+          <div class="quote-field"><label for="q-state">State / region *</label><input id="q-state" name="state" autocomplete="address-level1" list="regions" required maxlength="100" /><datalist id="regions"><option value="Dadra and Nagar Haveli and Daman and Diu"></option><option value="Gujarat"></option><option value="Maharashtra"></option><option value="Rajasthan"></option><option value="Delhi"></option><option value="Karnataka"></option><option value="Tamil Nadu"></option></datalist></div>
+          <div class="quote-field quote-field--full"><label for="q-message">Details of your requirement *</label><textarea id="q-message" name="message" rows="5" placeholder="Metal, grade, quantity and delivery location" required maxlength="3000"></textarea></div>
+          <label class="quote-consent quote-field--full"><input name="consent" type="checkbox" required /><span>I agree to be contacted by Creston Metals about this enquiry.</span></label>
+          <div class="quote-submit quote-field--full"><button class="btn btn--primary" type="submit" data-btn><span class="btn__fill"></span><span class="btn__label">Send enquiry</span></button><p data-quote-status role="status">Opens your email app with your enquiry filled in. Fields marked * are required.</p></div>
+        </form>
+      </section>
+      <section class="quote-location container" aria-labelledby="location-title">
+        <p class="quote-eyebrow">Visit us</p>
+        <h2 id="location-title">Find us in<br /><em>Dadra and Nagar Haveli.</em></h2>
+        <div class="location-card">
+          <div class="location-map"><iframe title="Creston Metals location in Dadra and Nagar Haveli" src="https://maps.google.com/maps?q=20.2603662,73.0114587&amp;z=15&amp;output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+          <div class="location-info theme-night">
+            <p class="quote-eyebrow">Our location</p>
+            <img src="/logo-mark.webp" alt="" width="72" height="72" loading="lazy" />
+            <h3>Dadra and<br />Nagar Haveli, India</h3>
+            <p class="location-coordinates">20.260366° N · 73.011459° E</p>
+            <address>Creston Metals<br />Dadra and Nagar Haveli<br />India</address>
+            <a class="location-directions" href="https://maps.app.goo.gl/SikjziNRJomTtyTr5" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer" data-site-footer></footer>
+  </body>
+</html>

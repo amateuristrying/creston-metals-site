@@ -27,6 +27,12 @@ Node is pinned by `.node-version`; the output directory is also declared in `wra
 npm run deploy
 ```
 
+## Quote page
+
+`/contact/` is a separate page linked from the hero, navigation and shared footer. Its entry point is `src/quote.js`; Vite builds both HTML pages. The form validates required fields and opens a prefilled email draft addressed to `hello@crestonmetals.com`. It does not send or store enquiries on a server.
+
+The page embeds the supplied Google Maps pin at 20.2603662, 73.0114587. The shared footer is rendered by `src/js/footer.js`.
+
 ## Content
 
 Copy, metals, industries and the enquiry email live in `src/js/data.js` and `index.html`.

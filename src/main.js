@@ -5,6 +5,8 @@ import 'lenis/dist/lenis.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/sections.css';
+import './styles/footer.css';
+import { renderFooter } from './js/footer.js';
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -44,10 +46,13 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// always start at the top so the intro plays over the hero
-if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-window.scrollTo(0, 0);
+// Start at the hero unless arriving at a section from the quote page.
+if (!window.location.hash) {
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+}
 
+renderFooter();
 renderContent();
 
 /* ---------- smooth scroll ---------- */
@@ -113,6 +118,21 @@ function runPreloader(onDone) {
     .add(() => root.remove());
 }
 
+function scrollToLinkedSection() {
+  const id = window.location.hash.slice(1);
+  if (!id) return;
+  let target;
+  try {
+    target = document.getElementById(decodeURIComponent(id));
+  } catch {
+    return;
+  }
+  if (target) {
+    if (lenis) lenis.scrollTo(target, { immediate: true });
+    else target.scrollIntoView();
+  }
+}
+
 async function start() {
   // split text needs final glyph metrics
   await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 2500))]);
@@ -135,6 +155,7 @@ async function start() {
     document.body.classList.remove('is-loading');
     runPreloader(() => {});
     ScrollTrigger.refresh();
+    scrollToLinkedSection();
     return;
   }
 
@@ -158,6 +179,7 @@ async function start() {
     document.body.classList.remove('is-loading');
     lenis?.start();
     heroIntro.play();
+    scrollToLinkedSection();
   });
 }
 
