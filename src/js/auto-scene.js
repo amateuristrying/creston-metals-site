@@ -935,8 +935,8 @@ export function createAutoScene(canvas) {
       Object.assign(rig, { reach: 2.15, drop: 1.5, rise: 1.2 });
     } else {
       camera.fov = 38;
-      // push the subject right of centre so the copy has room on the left
-      camera.setViewOffset(w, h, -w * 0.17, 0, w, h);
+      // Keep the scene centred behind the foreground process text.
+      camera.clearViewOffset();
       Object.assign(rig, { reach: 1, drop: 0, rise: 0 });
     }
     camera.updateProjectionMatrix();

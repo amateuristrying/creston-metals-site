@@ -127,7 +127,7 @@ Built on **GSAP** (ScrollTrigger, SplitText) with **Lenis** smooth scrolling, an
 **Rules**
 
 - Text enters by rising out of a mask, line by line (stagger 0.08s). It never fades in flat.
-- Scroll-linked motion is scrubbed — the user's hand is the timeline. Building and car sequences are full-section backgrounds beneath six foreground process chapters. Geometry, camera, road, sparks, chapter transitions and stage progress all seek to the same scroll position. No autoplay or pointer drift; stopping scroll holds the frame, and reversing scroll restores the earlier state.
+- Scroll-linked motion is scrubbed — the user's hand is the timeline. Building and car sequences are centred, full-section backgrounds beneath six centred foreground process chapters. A symmetrical wash keeps the overlaid text readable in both themes. Geometry, camera, road, sparks, chapter transitions and stage progress all seek to the same scroll position. No autoplay or pointer drift; stopping scroll holds the frame, and reversing scroll restores the earlier state.
 - Hover feedback starts within 100ms and follows the pointer's position.
 - `prefers-reduced-motion`: smooth scroll, cursor, preloader and reveals are disabled; content is simply there.
 

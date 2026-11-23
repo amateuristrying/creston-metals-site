@@ -375,8 +375,8 @@ export function createBuildScene(canvas) {
       });
     } else {
       camera.fov = 38;
-      // push the subject right of centre so the copy has room on the left
-      camera.setViewOffset(w, h, -w * 0.19, 0, w, h);
+      // Keep the scene centred behind the foreground process text.
+      camera.clearViewOffset();
       stackOrigin.set(-6.4, 0, 2.6);
       Object.assign(cfg, {
         a0: -0.5,
