@@ -29,13 +29,13 @@ npm run deploy
 
 ## Entrance
 
-The home page opens with a compact logo. Clicking it reveals Our story, Our catalog, and Contact in one step. Story opens the homepage at the top; catalog opens the metals section; Contact opens `/contact/`. Direct section links bypass the entrance. Keyboard users can tab through the menu and press Escape to collapse it, then Escape again to enter the home page. The entrance follows the saved theme and disables transitions for reduced motion.
+The home page opens with a compact logo. Clicking it reveals Our story, Our catalog, and Contact in one step. Story opens the homepage at the top, catalog opens `/catalog/`, and Contact opens `/contact/`. Direct section links bypass the entrance. Keyboard users can tab through the menu and press Escape to collapse it, then Escape again to enter the home page. The entrance follows the saved theme and disables transitions for reduced motion.
 
 ## Scroll stories
 
 The building and car sections use six foreground process chapters over pinned Three.js backgrounds. Their shared scroll driver renders only when progress, viewport size or theme changes. Effects use scroll-derived time, so frames hold when scrolling stops and reverse without accumulating road travel.
 
-Run `npm test` for the scroll-driver regression checks and `npm run build` for both pages.
+Run `npm test` for the scroll-driver regression checks and `npm run build` for the static site.
 
 ## Quote page
 
@@ -43,9 +43,11 @@ Run `npm test` for the scroll-driver regression checks and `npm run build` for b
 
 Detailed enquiry uses two columns on wider screens and one on phones. Material selection narrows the form and grade options. The form also captures dimensions, certification needs, an optional HSN code, quantity, delivery details and custom requirements. Submitting opens an email draft addressed to `sales@crestonmetals.com`.
 
-Vite builds a standalone page at `/metals/<slug>/` for each entry in `METALS`. The pages use the catalogue data and manufacturing notes in `src/js/data.js` and `src/js/metal-production.js`. Product photos use `public/images/metals/<slug>-640.webp` for cards and `<slug>-1200.webp` for larger screens. The matching `photoAlt` entry describes the image. The generated photos are illustrative.
-
 The page embeds the supplied Google Maps pin at 20.2603662, 73.0114587. The shared footer is rendered by `src/js/footer.js`.
+
+## Catalogue
+
+The homepage lists the metal families as tables. `/catalog/` shows the photos, descriptions, specifications, and product-specific quote links. Each product also has a standalone page at `/metals/<slug>/`. These views share `METALS` in `src/js/data.js`. Product photos use `public/images/metals/<slug>-640.webp` for cards and `<slug>-1200.webp` for larger screens. The matching `photoAlt` entry describes the illustrative image.
 
 ## Content
 

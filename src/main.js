@@ -7,7 +7,7 @@ import './styles/sections.css';
 import './styles/footer.css';
 import './styles/entrance.css';
 import { initEntrance } from './js/entrance.js';
-import { initPageLinks, revealItems } from './js/page-motion.js';
+import { initPageLinks } from './js/page-motion.js';
 import { renderFooter } from './js/footer.js';
 
 import gsap from 'gsap';
@@ -26,7 +26,6 @@ import {
   initButtons,
   initRollLinks,
   initNav,
-  initTilt,
   initIndustryRows,
 } from './js/ui.js';
 import {
@@ -34,7 +33,6 @@ import {
   initHero,
   initTicker,
   initAbout,
-  initMetals,
   initBuild,
   initDrive,
   initIndustries,
@@ -115,7 +113,6 @@ async function start() {
   if (reducedMotion) {
     // no choreography: content is simply there; only the pinned sequences remain scroll-linked
     if (hero) hero.state.intro = 1;
-    initMetals();
     initBuild(build);
     initDrive(drive);
     initProcess();
@@ -128,13 +125,11 @@ async function start() {
   const heroIntro = initHero(hero);
   initTicker();
   initAbout();
-  initMetals(); // pin
   initBuild(build); // pin
   initDrive(drive); // pin
   initIndustries();
   initProcess();
   initReveals(); // page-wide; safe now that every pin exists
-  initTilt();
   initIndustryRows();
   ScrollTrigger.refresh();
 
@@ -155,7 +150,6 @@ initEntrance({
     if (destination) history.replaceState(null, '', destination);
     ScrollTrigger.refresh();
     scrollToLinkedSection();
-    if (destination === '#metals') revealItems(document.querySelectorAll('.metals__head, .metals__viewport'), 180);
   },
 });
 

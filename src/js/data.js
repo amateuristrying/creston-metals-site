@@ -9,6 +9,7 @@ export const CONTACT_EMAIL = 'sales@crestonmetals.com';
 export const metalSlug = (metal) => metal.name.toLowerCase().replace(/ & /g, ' and ').replace(/\s+/g, '-');
 export const metalUrl = (metal) => `/metals/${metalSlug(metal)}/`;
 export const metalPhoto = (metal, size) => `/images/metals/${metalSlug(metal)}-${size}.webp`;
+export const metalQuoteUrl = (metal) => `/contact/?enquiry=detailed&metal=${metalSlug(metal)}`;
 
 export const METALS = [
   {

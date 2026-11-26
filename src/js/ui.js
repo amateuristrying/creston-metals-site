@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { METALS, INDUSTRIES, CONTACT_EMAIL, metalPhoto, metalUrl } from './data.js';
+import { METALS, INDUSTRIES, CONTACT_EMAIL } from './data.js';
 
 const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 const $ = (selector, scope = document) => scope.querySelector(selector);
@@ -7,33 +7,19 @@ const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)]
 
 /* ---------- render content from data ---------- */
 export function renderContent() {
-  const track = $('[data-metals-track]');
-  track.innerHTML = METALS.map(
-    (group) => `
-      <div class="metal-group" aria-hidden="true">
-        <span>${String(group.items.length).padStart(2, '0')} lines</span>
-        <strong>${group.family}</strong>
-      </div>
-      ${group.items
-        .map(
-          (m) => `
-        <article class="metal" data-metal>
-          <span class="metal__sheen"></span>
-          <div class="metal__top"><span class="metal__no">${m.no}</span><span>${group.family}</span></div>
-          <div class="metal__media">
-            <img class="metal__photo" src="${metalPhoto(m, 640)}" alt="${m.photoAlt}" width="640" height="426" loading="lazy" decoding="async" />
-            <span class="metal__sym" aria-hidden="true">${m.sym}</span>
-          </div>
-          <h3 class="metal__name"><a href="${metalUrl(m)}" data-page-transition>${m.name}</a></h3>
-          <p class="metal__forms">${m.forms}</p>
-          <ul class="metal__spec">
-            <li><span>Grade</span><span>${m.grade}</span></li>
-            <li><span>Goes into</span><span>${m.use}</span></li>
-          </ul>
-        </article>`
-        )
-        .join('')}`
-  ).join('');
+  $('[data-metal-tables]').innerHTML = METALS.map(({ family, items }) => `
+    <table class="metals__table">
+      <caption>${family}</caption>
+      <thead>
+        <tr><th scope="col">Metal</th><th scope="col">Typical forms</th></tr>
+      </thead>
+      <tbody>
+        ${items.map(({ name, forms }) => `
+          <tr><th scope="row">${name}</th><td>${forms}</td></tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `).join('');
 
   $('[data-industries]').innerHTML = INDUSTRIES.map(
     (ind, i) => `
@@ -307,29 +293,6 @@ export function initNav(lenis) {
       else target.scrollIntoView({ behavior: 'smooth' });
     };
     wasOpen ? setTimeout(go, 350) : go();
-  });
-}
-
-/* ---------- metal tiles: tilt + sheen ---------- */
-export function initTilt() {
-  if (!fine.matches) return;
-  $$('[data-metal]').forEach((card) => {
-    gsap.set(card, { transformPerspective: 900 });
-    const rx = gsap.quickTo(card, 'rotationX', { duration: 0.6, ease: 'power3' });
-    const ry = gsap.quickTo(card, 'rotationY', { duration: 0.6, ease: 'power3' });
-    card.addEventListener('pointermove', (e) => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      rx((0.5 - py) * 9);
-      ry((px - 0.5) * 11);
-      card.style.setProperty('--mx', `${px * 100}%`);
-      card.style.setProperty('--my', `${py * 100}%`);
-    });
-    card.addEventListener('pointerleave', () => {
-      rx(0);
-      ry(0);
-    });
   });
 }
 

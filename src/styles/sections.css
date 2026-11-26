@@ -208,8 +208,6 @@
   letter-spacing: -0.025em;
 }
 
-.about__photo { margin-top: clamp(2rem, 5vw, 5rem); }
-
 .pillars {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -301,290 +299,55 @@
 
 /* ============ METALS ============ */
 .metals {
-  position: relative;
-  background: var(--ink-800);
-  border-block: 1px solid var(--line);
-}
-
-.metals__pin {
-  height: 100vh;
-  height: 100svh;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.25rem, 2.6vh, 2.5rem);
-  padding: calc(var(--nav-h) + 1vh) 0 clamp(1.5rem, 4vh, 3rem);
-  overflow: hidden;
-}
-
-.metals__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-  flex: none;
-}
-
-.metals__head .label {
-  margin-bottom: 1rem;
-}
-
-.metals__aside {
-  display: grid;
-  gap: 1.1rem;
-  max-width: 24rem;
-  color: var(--text-muted);
-  font-size: 0.92rem;
-}
-
-.metals__progress {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  color: var(--text-faint);
-  font-variant-numeric: tabular-nums;
-}
-
-.metals__progress-no {
-  color: var(--accent);
-}
-
-.metals__progress-bar {
-  flex: 1;
-  height: 1px;
-  background: var(--line-strong);
-}
-
-.metals__progress-bar span {
-  display: block;
-  height: 100%;
-  background: var(--ember-400);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-}
-
-.metals__viewport {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-}
-
-.metals__track {
-  display: flex;
-  gap: clamp(0.75rem, 1.2vw, 1.25rem);
-  padding-inline: var(--gutter);
-  width: max-content;
-  height: 100%;
-  max-height: 560px;
-  align-self: center;
-  will-change: transform;
-}
-
-.metal-group {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: clamp(5rem, 9vw, 9rem);
-  padding-block: 0.25rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.metal-group strong {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  align-self: flex-start;
-  font-family: var(--font-display);
-  font-stretch: 122%;
-  font-weight: 800;
-  font-size: clamp(2rem, 4.4vw, 4.25rem);
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--steel-500);
-}
-
-.metal {
-  --cut: 26px;
-  position: relative;
-  flex: none;
-  width: clamp(264px, 24vw, 372px);
-  display: flex;
-  flex-direction: column;
-  padding: clamp(1.1rem, 1.6vw, 1.6rem);
-  background: var(--card-edge);
-  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
-  isolation: isolate;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-.metal::before {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  z-index: -2;
-  background: var(--card-fill);
-  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
-}
-
-.metal__sheen {
-  position: absolute;
-  inset: 1px;
-  z-index: -1;
-  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 0%), rgba(247, 173, 69, 0.26), transparent 62%);
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
-  pointer-events: none;
-}
-
-.metal:hover .metal__sheen {
-  opacity: 1;
-}
-
-.metal__top {
-  display: flex;
-  justify-content: space-between;
-  padding-right: 1.25rem;
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.metal__no {
-  color: var(--accent);
-}
-
-.metal__media {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 100px;
-  margin-block: .85rem 1rem;
-  overflow: hidden;
+  padding-block: clamp(3rem, 7vw, 6rem);
   background: var(--bg-raised);
+  scroll-margin-top: var(--nav-h);
 }
 
-.metal__photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .5s var(--ease-out);
+.metals__head { margin-bottom: clamp(2rem, 5vw, 4rem); }
+.metals__head .label { margin-bottom: 1rem; }
+.metals__tables {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(2rem, 4vw, 4rem);
 }
 
-.metal:hover .metal__photo { transform: scale(1.04); }
-
-.metal__sym {
-  position: absolute;
-  bottom: .6rem;
-  left: .6rem;
-  padding: .3rem .45rem;
-  background: rgba(15, 17, 21, .82);
-  color: white;
-  font: 500 .7rem var(--font-mono);
-  letter-spacing: .08em;
+.metals__table { width: 100%; border-collapse: collapse; }
+.metals__table caption {
+  text-align: left;
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: .85rem;
+  font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+  font-weight: 650;
 }
 
-.metal__name {
-  margin-bottom: 0.35rem;
-  text-transform: uppercase;
-}
-
-.metal__name a::after { content: ''; position: absolute; inset: 0; }
-.metal__name a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-.metal__forms {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.metal__spec {
-  margin-top: clamp(0.9rem, 1.6vw, 1.4rem);
-  border-top: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-}
-
-.metal__spec li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.65rem 0;
+.metals__table th,
+.metals__table td {
+  padding: .9rem 0;
   border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  text-align: left;
 }
 
-.metal__spec li span:first-child {
-  flex: none;
-  color: var(--text-faint);
+.metals__table th:first-child {
+  width: 38%;
+  padding-right: 1rem;
+}
+
+.metals__table thead th {
+  font: 500 .72rem var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: .08em;
+  color: var(--text-muted);
 }
 
-.metal__spec li span:last-child {
-  text-align: right;
-  color: var(--steel-200);
-}
+.metals__table tbody th { font-weight: 650; }
+.metals__table td { color: var(--text-muted); }
+.metals__actions { margin-top: clamp(1.75rem, 4vw, 3rem); }
 
-@media (max-width: 960px) {
-  .metals__pin {
-    height: auto;
-    min-height: 0;
-    padding-block: var(--section);
-    overflow: visible;
-  }
-
-  .metals__head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .metals__aside {
-    width: 100%;
-    max-width: none;
-  }
-
-  .metals__viewport {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--gutter);
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .metals__viewport::-webkit-scrollbar {
-    display: none;
-  }
-
-  .metals__track {
-    height: 430px;
-    max-height: none;
-  }
-
-  .metal {
-    width: min(72vw, 310px);
-    scroll-snap-align: start;
-  }
-
-  .metal-group {
-    width: 3rem;
-    scroll-snap-align: start;
-  }
-
-  .metal-group strong {
-    font-size: 2.4rem;
-  }
+@media (max-width: 760px) {
+  .metals__tables { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ============ SCROLL STORIES ============ */

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-IN" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Metals Catalogue — Creston Metals</title>
+    <meta name="description" content="Browse ferrous and non-ferrous metals, compare forms and grades, and request a Creston Metals quote for your material." />
+    <link rel="icon" href="/favicon.png" />
+    <script>
+      try {
+        if (localStorage.getItem('creston-theme') === 'dark') delete document.documentElement.dataset.theme;
+      } catch {}
+    </script>
+    <script type="module" src="/src/catalog.js"></script>
+  </head>
+  <body id="top" class="catalog-page">
+    <header class="catalog-nav">
+      <div class="container catalog-nav__inner">
+        <a class="brand" href="/#top" aria-label="Creston Metals — home" data-page-transition>
+          <img class="mark--day" src="/logo-mark-day.webp" alt="" width="44" height="44" />
+          <img class="mark--night" src="/logo-mark.webp" alt="" width="44" height="44" />
+          <span class="brand__word">Creston<small>Metals</small></span>
+        </a>
+        <a class="btn btn--ghost" href="/contact/?enquiry=detailed" data-page-transition data-btn>
+          <span class="btn__fill"></span><span class="btn__label">Request a quote</span>
+        </a>
+      </div>
+    </header>
+    <main class="catalog container" id="main">
+      <header class="catalog__intro">
+        <a href="/#metals" data-page-transition>Back to our metals</a>
+        <h1>Metals catalogue</h1>
+        <p>Compare product forms and typical grades, then request a quote for the material you need. Images are illustrative.</p>
+        <nav class="catalog__jump" aria-label="Metal categories">
+          <a href="#ferrous">Ferrous</a>
+          <a href="#non-ferrous">Non-ferrous</a>
+        </nav>
+      </header>
+      <div data-catalog-products></div>
+      <figure class="editorial-photo catalog__scene">
+        <img src="/images/stockyard-1440.webp" srcset="/images/stockyard-720.webp 720w, /images/stockyard-1440.webp 1440w" sizes="(max-width: 765px) 94vw, 92vw" alt="Steel sections on supports in a metal stockyard aisle" width="1440" height="960" loading="lazy" decoding="async" />
+        <figcaption>Illustrative stockyard scene</figcaption>
+      </figure>
+    </main>
+    <footer class="site-footer" data-site-footer></footer>
+  </body>
+</html>

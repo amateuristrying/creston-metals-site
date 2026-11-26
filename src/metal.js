@@ -4,7 +4,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/footer.css';
 import './styles/metal.css';
-import { METALS, metalPhoto, metalSlug } from './js/data.js';
+import { METALS, metalPhoto, metalQuoteUrl, metalSlug } from './js/data.js';
 import { PRODUCTION } from './js/metal-production.js';
 import { standardFor } from './js/quote-details.js';
 import { renderFooter } from './js/footer.js';
@@ -33,7 +33,7 @@ root.insertAdjacentHTML('beforeend', `
         ${standard ? `<div><dt>Reference standard</dt><dd>${standard}</dd></div>` : ''}
         <div><dt>Common applications</dt><dd>${metal.use}</dd></div>
       </dl>
-      <a class="btn btn--primary" href="/contact/?enquiry=detailed&amp;metal=${slug}" data-page-transition data-btn>
+      <a class="btn btn--primary" href="${metalQuoteUrl(metal)}" data-page-transition data-btn>
         <span class="btn__fill"></span><span class="btn__label">Request a quote</span>
       </a>
     </div>
