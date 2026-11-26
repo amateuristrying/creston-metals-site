@@ -7,11 +7,9 @@ import './styles/catalog.css';
 import { METALS, metalPhoto, metalQuoteUrl, metalUrl } from './js/data.js';
 import { renderFooter } from './js/footer.js';
 import { initPageLinks, revealItems } from './js/page-motion.js';
-import { standardFor } from './js/quote-details.js';
 import { initButtons } from './js/ui.js';
 
 function productCard(metal) {
-  const standard = standardFor(metal.name);
   return `
     <article class="catalog-card">
       <a class="catalog-card__photo" href="${metalUrl(metal)}" aria-label="View ${metal.name} details" data-page-transition>
@@ -19,14 +17,10 @@ function productCard(metal) {
       </a>
       <div class="catalog-card__body">
         <h3><a href="${metalUrl(metal)}" data-page-transition>${metal.name}</a></h3>
-        <p>${metal.forms}</p>
-        <dl class="catalog-card__specs">
-          <div><dt>Grade / purity</dt><dd>${metal.grade}</dd></div>
-          <div><dt>Applications</dt><dd>${metal.use}</dd></div>
-          ${standard ? `<div><dt>Reference standard</dt><dd>${standard}</dd></div>` : ''}
-        </dl>
-        <a class="btn btn--primary catalog-card__quote" href="${metalQuoteUrl(metal)}" aria-label="Request a quote for ${metal.name}" data-page-transition data-btn>
-          <span class="btn__fill"></span><span class="btn__label">Request a quote</span>
+        <p class="catalog-card__forms">${metal.forms}</p>
+        <dl class="catalog-card__grade"><dt>Grade / purity</dt><dd>${metal.grade}</dd></dl>
+        <a class="catalog-card__quote" href="${metalQuoteUrl(metal)}" aria-label="Request a quote for ${metal.name}" data-page-transition>
+          Request a quote
         </a>
       </div>
     </article>`;
