@@ -96,6 +96,26 @@
   gap: 0.75rem;
 }
 
+.hero__principles {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-block: 1.75rem auto;
+  padding-bottom: 2rem;
+}
+
+.hero__principles > div { max-width: 27ch; }
+.hero__principles > div:last-child { text-align: right; }
+.hero__principles h2 { color: var(--accent); font: 600 .75rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+.hero__principles p { margin-top: .4rem; font-size: .875rem; line-height: 1.45; }
+.hero__cta-note { font-size: .75em; }
+.metal__photo { width: 100%; height: 96px; object-fit: cover; }
+.business-panel { padding-block: 2rem 5rem; }
+.business-panel details { border-block: 1px solid var(--line); padding: 1rem 0; max-inline-size: 32rem; }
+.business-panel summary { cursor: pointer; font-weight: 600; }
+.business-panel p { margin-block: .75rem; color: var(--text-muted); }
+.business-panel a { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
+
 @media (max-width: 720px) {
   .hero__glow {
     right: -40vmax;
@@ -187,11 +207,6 @@
   font-size: clamp(1.75rem, 4.3vw, 4.4rem);
   line-height: 1.1;
   letter-spacing: -0.025em;
-}
-
-.about__text em {
-  font-size: 1.1em;
-  line-height: 1;
 }
 
 .pillars {

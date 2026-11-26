@@ -45,7 +45,7 @@
   --text-muted: var(--steel-400);
   --text-faint: var(--steel-500);
   --accent: var(--ember-400); /* accent as text or hairline */
-  --accent-em: var(--ember-300); /* the serif word in a headline */
+  --accent-em: var(--ember-300); /* headline emphasis */
   --on-accent: #050506; /* text on an ember fill — never flips */
   --line: rgba(255, 255, 255, 0.09);
   --line-strong: rgba(255, 255, 255, 0.18);
@@ -104,7 +104,7 @@
   /* Type */
   --font-display: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --font-emphasis: Helvetica, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, monospace;
 
   --fs-hero: clamp(2.1rem, 8.4vw, 8.5rem);

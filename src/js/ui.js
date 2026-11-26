@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { METALS, INDUSTRIES, CONTACT_EMAIL } from './data.js';
+import { METALS, INDUSTRIES, CONTACT_EMAIL, metalUrl } from './data.js';
 
 const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 const $ = (selector, scope = document) => scope.querySelector(selector);
@@ -21,7 +21,8 @@ export function renderContent() {
           <span class="metal__sheen"></span>
           <div class="metal__top"><span class="metal__no">${m.no}</span><span>${group.family}</span></div>
           <div class="metal__sym" data-sym="${m.sym}">${m.sym}</div>
-          <h3 class="metal__name">${m.name}</h3>
+          <h3 class="metal__name"><a href="${metalUrl(m)}" data-page-transition>${m.name}</a></h3>
+          ${m.image ? `<img class="metal__photo" src="${m.image}" alt="${m.name}" loading="lazy" />` : ''}
           <p class="metal__forms">${m.forms}</p>
           <ul class="metal__spec">
             <li><span>Grade</span><span>${m.grade}</span></li>
@@ -45,9 +46,11 @@ export function renderContent() {
       </li>`
   ).join('');
 
-  const email = $('[data-contact-email]');
-  email.textContent = CONTACT_EMAIL;
-  email.href = `mailto:${CONTACT_EMAIL}`;
+  const metalCount = METALS.reduce((count, group) => count + group.items.length, 0);
+  $$('[data-metal-count]').forEach((node) => {
+    node.textContent = String(metalCount).padStart(2, '0');
+    if (node.hasAttribute('data-count')) node.dataset.count = metalCount;
+  });
   $$('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
 }
 

@@ -4,7 +4,10 @@
  * confirm against what Creston actually stocks before launch.
  */
 
-export const CONTACT_EMAIL = 'hello@crestonmetals.com';
+export const CONTACT_EMAIL = 'sales@crestonmetals.com';
+
+export const metalSlug = (metal) => metal.name.toLowerCase().replace(/ & /g, ' and ').replace(/\s+/g, '-');
+export const metalUrl = (metal) => `/metals/${metalSlug(metal)}/`;
 
 export const METALS = [
   {
@@ -41,14 +44,6 @@ export const METALS = [
         forms: 'Beams, columns, angles, channels',
         grade: 'E250 · E350 · E450',
         use: 'Buildings, bridges, sheds',
-      },
-      {
-        sym: 'PIG',
-        no: 'Fe · 26',
-        name: 'Pig & Sponge Iron',
-        forms: 'Foundry and steel-making grades, DRI',
-        grade: 'Foundry · Basic · DRI',
-        use: 'Foundries, melt shops',
       },
       {
         sym: 'SS',

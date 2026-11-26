@@ -25,18 +25,25 @@
   </head>
 
   <body class="is-loading">
-    <!-- Preloader -->
-    <div class="preloader" aria-hidden="true">
-      <div class="preloader__inner">
-        <img class="preloader__mark mark--day" src="/logo-mark-day.webp" alt="" width="320" height="320" />
-        <img class="preloader__mark mark--night" src="/logo-mark.webp" alt="" width="320" height="320" loading="lazy" />
-        <div class="preloader__row">
-          <span class="preloader__label">Creston Metals</span>
-          <span class="preloader__count"><span data-preloader-count>000</span>%</span>
+    <!-- Two-stage introduction: logo → destinations -->
+    <div class="entrance" role="dialog" aria-modal="true" aria-label="Welcome to Creston Metals">
+      <div class="entrance__panel">
+        <div class="entrance__guides" aria-hidden="true"></div>
+        <div class="entrance__head">
+          <button class="entrance__logo" type="button" aria-label="Explore Creston Metals" aria-expanded="false" aria-controls="entrance-options">
+            <img class="mark--day" src="/logo-mark-day.webp" alt="" width="80" height="80" />
+            <img class="mark--night" src="/logo-mark.webp" alt="" width="80" height="80" />
+          </button>
+          <div class="entrance__brand" aria-hidden="true">Creston<span>Metals</span></div>
         </div>
-        <div class="preloader__bar"><span></span></div>
+        <nav class="entrance__options" id="entrance-options" aria-label="Explore Creston Metals" hidden>
+          <a class="entrance__link" href="#top">Our story</a>
+          <a class="entrance__link" href="#metals">Our catalog</a>
+          <a class="entrance__link" href="/contact/?enquiry=detailed" data-page-transition>Contact</a>
+        </nav>
       </div>
     </div>
+    <noscript><style>.entrance { display: none; } body.is-loading { overflow: auto; }</style></noscript>
 
     <!-- Global chrome -->
     <div class="grain" aria-hidden="true"></div>
@@ -81,7 +88,7 @@
         <a href="#industries" data-roll>Industries</a>
         <a href="#process" data-roll>Process</a>
       </nav>
-      <a class="btn btn--ghost nav__cta" href="/contact/" data-magnetic data-btn>
+      <a class="btn btn--ghost nav__cta" href="/contact/?enquiry=detailed" data-page-transition data-magnetic data-btn>
         <span class="btn__fill"></span>
         <span class="btn__label">Request a quote</span>
         <span class="btn__icon" aria-hidden="true">↗</span>
@@ -99,7 +106,7 @@
         <a href="#build"><span class="menu__no">03</span><span class="menu__txt">Impact</span></a>
         <a href="#industries"><span class="menu__no">04</span><span class="menu__txt">Industries</span></a>
         <a href="#process"><span class="menu__no">05</span><span class="menu__txt">Process</span></a>
-        <a href="/contact/"><span class="menu__no">06</span><span class="menu__txt">Request a quote</span></a>
+        <a href="/contact/?enquiry=detailed" data-page-transition><span class="menu__no">06</span><span class="menu__txt">Request a quote</span></a>
       </nav>
       <p class="menu__foot">Ferrous &amp; non-ferrous commodities · India</p>
     </div>
@@ -110,6 +117,11 @@
         <div class="hero__glow" aria-hidden="true"></div>
         <canvas class="hero__canvas" aria-hidden="true"></canvas>
         <div class="hero__shade" aria-hidden="true"></div>
+
+        <div class="hero__principles container" data-hero-fade>
+          <div><h2>Vision</h2><p>To be a trusted metals partner for the people building India’s infrastructure.</p></div>
+          <div><h2>Mission</h2><p>To source the right grade, verify it, and deliver it where the work happens.</p></div>
+        </div>
 
         <div class="hero__inner container">
           <h1 class="hero__title" aria-label="The metal behind India's dreams.">
@@ -123,14 +135,13 @@
               factories and homes — the right grade, in the right quantity, where the work is.
             </p>
             <div class="hero__cta" data-hero-fade>
-              <a class="btn btn--primary" href="/contact/" data-magnetic data-btn>
+              <a class="btn btn--primary" href="/contact/?enquiry=detailed" data-page-transition data-magnetic data-btn>
                 <span class="btn__fill"></span>
-                <span class="btn__label">Request a quote</span>
-                <span class="btn__icon" aria-hidden="true">↗</span>
+                <span class="btn__label">Let’s do business <span class="hero__cta-note">· Request a quote</span></span>
               </a>
-              <a class="btn btn--ghost" href="#metals" data-magnetic data-btn>
+              <a class="btn btn--ghost" href="#about" data-magnetic data-btn>
                 <span class="btn__fill"></span>
-                <span class="btn__label">Explore our metals</span>
+                <span class="btn__label">View our story</span>
               </a>
             </div>
           </div>
@@ -149,7 +160,7 @@
         <div class="ticker__row" data-ticker="-1">
           <div class="ticker__track">
             <span class="is-outline">Structural Steel</span><i></i><span>Nickel</span><i></i
-            ><span class="is-outline">Stainless</span><i></i><span>Pig Iron</span><i></i
+            ><span class="is-outline">Stainless</span><i></i
             ><span class="is-outline">Lead</span><i></i><span>Tin</span><i></i>
           </div>
         </div>
@@ -171,7 +182,7 @@
               <p>Ferrous and non-ferrous under one roof — a single counterparty for the whole bill of materials.</p>
             </article>
             <article class="pillar" data-pillar>
-              <span class="pillar__num"><span data-count="12">12</span></span>
+              <span class="pillar__num"><span data-count data-metal-count></span></span>
               <h3>Commodity lines</h3>
               <p>From billets and TMT to cathodes and ingots — the metals that industry actually runs on.</p>
             </article>
@@ -190,14 +201,14 @@
           <header class="metals__head container">
             <div>
               <p class="label" data-reveal>(02) — What we trade</p>
-              <h2 class="h2" data-split>Twelve metals. <em>One desk.</em></h2>
+              <h2 class="h2" data-split>Our metals. <em>One desk.</em></h2>
             </div>
             <div class="metals__aside">
               <p data-reveal>Typical forms and grades are listed. If your specification isn’t here, ask — we source to order.</p>
               <div class="metals__progress" aria-hidden="true">
                 <span class="metals__progress-no" data-metals-no>01</span>
                 <span class="metals__progress-bar"><span data-metals-bar></span></span>
-                <span>12</span>
+                <span data-metal-count></span>
               </div>
             </div>
           </header>
@@ -402,71 +413,12 @@
         </div>
       </section>
 
-      <!-- ============ CONTACT ============ -->
-      <section class="contact" id="contact">
-        <div class="contact__glow" aria-hidden="true"></div>
-        <div class="container contact__grid">
-          <div class="contact__lead">
-            <p class="label" data-reveal>(07) — Start an order</p>
-            <h2 class="h1" data-split>Let’s build something that <em>lasts.</em></h2>
-            <p class="contact__copy" data-reveal>
-              Send us your requirement — grade, tonnage, delivery location — and we will come back with availability and
-              a price.
-            </p>
-            <dl class="contact__details" data-reveal>
-              <div>
-                <dt>Email</dt>
-                <dd><a href="mailto:hello@crestonmetals.com" data-contact-email data-roll>hello@crestonmetals.com</a></dd>
-              </div>
-              <div>
-                <dt>Phone</dt>
-                <dd><a href="tel:+919265068741">+91 92650 68741</a></dd>
-              </div>
-              <div>
-                <dt>Based in</dt>
-                <dd>Dadra and Nagar Haveli · Delivering nationwide</dd>
-              </div>
-            </dl>
-          </div>
-
-          <form class="form" data-form novalidate>
-            <div class="field">
-              <input id="f-name" name="name" type="text" placeholder=" " autocomplete="name" required />
-              <label for="f-name">Your name</label>
-              <span class="field__line"></span>
-            </div>
-            <div class="field">
-              <input id="f-company" name="company" type="text" placeholder=" " autocomplete="organization" />
-              <label for="f-company">Company</label>
-              <span class="field__line"></span>
-            </div>
-            <div class="field">
-              <input id="f-email" name="email" type="email" placeholder=" " autocomplete="email" required />
-              <label for="f-email">Email</label>
-              <span class="field__line"></span>
-            </div>
-            <fieldset class="chips">
-              <legend>What do you need?</legend>
-              <label class="chip"><input type="checkbox" name="need" value="Ferrous" /><span>Ferrous</span></label>
-              <label class="chip"><input type="checkbox" name="need" value="Non-ferrous" /><span>Non-ferrous</span></label>
-              <label class="chip"><input type="checkbox" name="need" value="Both" /><span>Both</span></label>
-              <label class="chip"><input type="checkbox" name="need" value="Not sure yet" /><span>Not sure yet</span></label>
-            </fieldset>
-            <div class="field">
-              <textarea id="f-msg" name="message" rows="3" placeholder=" " required></textarea>
-              <label for="f-msg">Grade, quantity, delivery location</label>
-              <span class="field__line"></span>
-            </div>
-            <div class="form__foot">
-              <button class="btn btn--primary btn--lg" type="submit" data-magnetic data-btn>
-                <span class="btn__fill"></span>
-                <span class="btn__label">Send enquiry</span>
-                <span class="btn__icon" aria-hidden="true">↗</span>
-              </button>
-              <p class="form__note" data-form-note role="status">Opens your email app with the enquiry filled in.</p>
-            </div>
-          </form>
-        </div>
+      <section class="business-panel container" id="contact" aria-label="Business enquiries">
+        <details>
+          <summary>Business?</summary>
+          <p>See how we source, verify and deliver your order.</p>
+          <a href="/contact/?enquiry=detailed" data-page-transition>Let’s do business</a>
+        </details>
       </section>
     </main>
 

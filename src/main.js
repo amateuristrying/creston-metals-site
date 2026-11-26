@@ -1,11 +1,13 @@
 import '@fontsource-variable/archivo/wdth.css';
-import '@fontsource/instrument-serif/400-italic.css';
 import '@fontsource-variable/jetbrains-mono/index.css';
 import 'lenis/dist/lenis.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/sections.css';
 import './styles/footer.css';
+import './styles/entrance.css';
+import { initEntrance } from './js/entrance.js';
+import { initPageLinks, revealItems } from './js/page-motion.js';
 import { renderFooter } from './js/footer.js';
 
 import gsap from 'gsap';
@@ -26,7 +28,6 @@ import {
   initNav,
   initTilt,
   initIndustryRows,
-  initForm,
 } from './js/ui.js';
 import {
   initReveals,
@@ -38,7 +39,6 @@ import {
   initDrive,
   initIndustries,
   initProcess,
-  initOutro,
 } from './js/sections.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -54,6 +54,7 @@ if (!window.location.hash) {
 
 renderFooter();
 renderContent();
+initPageLinks();
 
 /* ---------- smooth scroll ---------- */
 let lenis = null;
@@ -85,39 +86,6 @@ gsap.ticker.add(() => {
   drive?.frame(now);
 });
 
-/* ---------- preloader → hero ---------- */
-function runPreloader(onDone) {
-  const root = document.querySelector('.preloader');
-  const count = document.querySelector('[data-preloader-count]');
-  const counter = { v: 0 };
-
-  if (reducedMotion) {
-    root.remove();
-    onDone();
-    return;
-  }
-
-  gsap
-    .timeline()
-    .from('.preloader__mark', { scale: 0.6, rotation: -30, opacity: 0, duration: 1.4, ease: 'expo.out' }, 0)
-    .from('.preloader__row, .preloader__bar', { opacity: 0, y: 12, duration: 0.8, ease: 'expo.out', stagger: 0.08 }, 0.2)
-    .to(
-      counter,
-      {
-        v: 100,
-        duration: 1.9,
-        ease: 'power2.inOut',
-        onUpdate: () => (count.textContent = String(Math.round(counter.v)).padStart(3, '0')),
-      },
-      0.2
-    )
-    .to('.preloader__bar span', { scaleX: 1, duration: 1.9, ease: 'power2.inOut' }, 0.2)
-    .to('.preloader__inner', { y: -40, opacity: 0, duration: 0.55, ease: 'power2.in' })
-    .add(onDone)
-    .to(root, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' }, '<')
-    .add(() => root.remove());
-}
-
 function scrollToLinkedSection() {
   const id = window.location.hash.slice(1);
   if (!id) return;
@@ -143,7 +111,6 @@ async function start() {
   initMagnetic();
   initCursor();
   initNav(lenis);
-  initForm();
 
   if (reducedMotion) {
     // no choreography: content is simply there; only the pinned sequences remain scroll-linked
@@ -152,11 +119,8 @@ async function start() {
     initBuild(build);
     initDrive(drive);
     initProcess();
-    document.body.classList.remove('is-loading');
-    runPreloader(() => {});
     ScrollTrigger.refresh();
-    scrollToLinkedSection();
-    return;
+    return { heroIntro: null };
   }
 
   // ScrollTriggers must be created top-to-bottom: anything below a pinned
@@ -169,20 +133,30 @@ async function start() {
   initDrive(drive); // pin
   initIndustries();
   initProcess();
-  initOutro();
   initReveals(); // page-wide; safe now that every pin exists
   initTilt();
   initIndustryRows();
   ScrollTrigger.refresh();
 
-  runPreloader(() => {
-    document.body.classList.remove('is-loading');
-    lenis?.start();
-    heroIntro.play();
-    scrollToLinkedSection();
-  });
+  return { heroIntro };
 }
 
-start();
+const pageReady = start();
+initEntrance({
+  reducedMotion,
+  async onEnter(destination) {
+    const { heroIntro } = await pageReady;
+    document.body.classList.remove('is-loading');
+    lenis?.start();
+    // Settle the hero before jumping to a destination below it.
+    const linkedSection = destination || window.location.hash;
+    if (linkedSection && linkedSection !== '#top') heroIntro?.progress(1);
+    else heroIntro?.play();
+    if (destination) history.replaceState(null, '', destination);
+    ScrollTrigger.refresh();
+    scrollToLinkedSection();
+    if (destination === '#metals') revealItems(document.querySelectorAll('.metals__head, .metals__viewport'), 180);
+  },
+});
 
 window.addEventListener('load', () => ScrollTrigger.refresh());

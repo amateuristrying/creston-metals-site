@@ -55,16 +55,13 @@
         </button>
       </div>
       <nav class="nav__links" aria-label="Primary">
-        <a href="/#about" data-roll>About</a>
-        <a href="/#metals" data-roll>Metals</a>
-        <a href="/#build" data-roll>Impact</a>
-        <a href="/#industries" data-roll>Industries</a>
-        <a href="/#process" data-roll>Process</a>
+        <a href="/#top" data-roll>Company profile</a>
+        <a href="#purchase-process" data-roll>Buying and delivery</a>
       </nav>
       <a class="btn btn--ghost nav__cta" href="#enquiry" data-magnetic data-btn>
         <span class="btn__fill"></span>
         <span class="btn__label">Request a quote</span>
-        <span class="btn__icon" aria-hidden="true">↗</span>
+
       </a>
       <button class="nav__burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
         <span></span><span></span>
@@ -74,48 +71,80 @@
     <div class="menu" id="menu" aria-hidden="true">
       <div class="menu__bg"></div>
       <nav class="menu__links" aria-label="Mobile">
-        <a href="/#about"><span class="menu__no">01</span><span class="menu__txt">About</span></a>
-        <a href="/#metals"><span class="menu__no">02</span><span class="menu__txt">Metals</span></a>
-        <a href="/#build"><span class="menu__no">03</span><span class="menu__txt">Impact</span></a>
-        <a href="/#industries"><span class="menu__no">04</span><span class="menu__txt">Industries</span></a>
-        <a href="/#process"><span class="menu__no">05</span><span class="menu__txt">Process</span></a>
-        <a href="#enquiry"><span class="menu__no">06</span><span class="menu__txt">Request a quote</span></a>
+        <a href="/#top"><span class="menu__no">01</span><span class="menu__txt">Company profile</span></a>
+        <a href="#purchase-process"><span class="menu__no">02</span><span class="menu__txt">Buying and delivery</span></a>
+        <a href="#enquiry"><span class="menu__no">03</span><span class="menu__txt">Request a quote</span></a>
       </nav>
       <p class="menu__foot">Ferrous &amp; non-ferrous commodities · India</p>
     </div>
 
     <main id="main">
       <section class="quote-intro container" id="enquiry" aria-labelledby="quote-title">
-        <div class="quote-copy">
-          <p class="quote-eyebrow">Write to us</p>
-          <h1 id="quote-title">Tell us about<br />your <em>requirement.</em></h1>
-          <p class="quote-lede">Share the metal, grade, quantity and delivery location. We’ll come back with availability, pricing and a clear next step.</p>
-          <dl class="quote-details">
-            <div><dt>Sales &amp; operations</dt><dd><a href="tel:+919265068741">+91 92650 68741</a></dd></div>
-            <div><dt>Procurement desk</dt><dd><a href="tel:+919265068741">+91 92650 68741</a></dd></div>
-            <div><dt>Email</dt><dd><a href="mailto:hello@crestonmetals.com">hello@crestonmetals.com</a></dd></div>
-          </dl>
-          <p class="quote-footnote">Ferrous &amp; non-ferrous metals.<br />One desk, from enquiry to delivery.</p>
+        <div class="quote-mode" role="group" aria-label="Enquiry type">
+          <button type="button" data-quote-mode="quick" aria-pressed="true" aria-controls="quote-fields">Quick enquiry</button>
+          <button type="button" data-quote-mode="detailed" aria-pressed="false" aria-controls="quote-fields">Detailed enquiry</button>
         </div>
-        <form class="quote-form" data-quote-form>
-          <div class="quote-field quote-field--full">
-            <label for="q-interest">What can we help you with? <span aria-hidden="true">*</span></label>
-            <select id="q-interest" name="interest" required>
-              <option value="" disabled selected>Select your requirement</option>
-              <option>Ferrous metals</option><option>Non-ferrous metals</option><option>Ferrous &amp; non-ferrous metals</option><option>Procurement / supply partnership</option><option>Other enquiry</option>
-            </select>
-          </div>
-          <div class="quote-field"><label for="q-first">First name *</label><input id="q-first" name="firstName" autocomplete="given-name" required maxlength="80" /></div>
-          <div class="quote-field"><label for="q-last">Last name *</label><input id="q-last" name="lastName" autocomplete="family-name" required maxlength="80" /></div>
-          <div class="quote-field"><label for="q-company">Company name</label><input id="q-company" name="company" autocomplete="organization" maxlength="160" /></div>
-          <div class="quote-field"><label for="q-email">Company email *</label><input id="q-email" name="email" type="email" autocomplete="email" required maxlength="254" /></div>
-          <div class="quote-field quote-field--full"><label for="q-phone">Phone number *</label><div class="quote-phone"><span>+91</span><input id="q-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" pattern="[+]?[0-9][0-9 ]{5,18}[0-9]" title="Enter 7–20 digits and spaces, with an optional + country code." required aria-describedby="phone-hint" /></div><small id="phone-hint">For a number outside India, include your country code.</small></div>
-          <div class="quote-field"><label for="q-country">Country *</label><input id="q-country" name="country" autocomplete="country-name" list="countries" value="India" required maxlength="100" /><datalist id="countries"><option value="India"></option><option value="United Arab Emirates"></option><option value="Singapore"></option><option value="United Kingdom"></option><option value="United States"></option></datalist></div>
-          <div class="quote-field"><label for="q-state">State / region *</label><input id="q-state" name="state" autocomplete="address-level1" list="regions" required maxlength="100" /><datalist id="regions"><option value="Dadra and Nagar Haveli and Daman and Diu"></option><option value="Gujarat"></option><option value="Maharashtra"></option><option value="Rajasthan"></option><option value="Delhi"></option><option value="Karnataka"></option><option value="Tamil Nadu"></option></datalist></div>
-          <div class="quote-field quote-field--full"><label for="q-message">Details of your requirement *</label><textarea id="q-message" name="message" rows="5" placeholder="Metal, grade, quantity and delivery location" required maxlength="3000"></textarea></div>
-          <label class="quote-consent quote-field--full"><input name="consent" type="checkbox" required /><span>I agree to be contacted by Creston Metals about this enquiry.</span></label>
-          <div class="quote-submit quote-field--full"><button class="btn btn--primary" type="submit" data-btn><span class="btn__fill"></span><span class="btn__label">Send enquiry</span></button><p data-quote-status role="status">Opens your email app with your enquiry filled in. Fields marked * are required.</p></div>
+        <div class="quote-copy">
+          <h1 id="quote-title">Request a quote</h1>
+          <p class="quote-lede" data-mode-description>Share the essentials. We’ll get in touch to work out the details.</p>
+          <p class="quote-note">Fields marked * are required. <a href="#purchase-process">See how buying and delivery works</a>.</p>
+        </div>
+        <form class="quote-form" id="quote-fields" data-quote-form data-mode="quick">
+          <input type="hidden" name="enquiryMode" value="quick" />
+          <fieldset data-quick-fields>
+            <legend>Your requirement</legend>
+            <div class="quote-field quote-field--full"><label for="q-quickRequirement">What do you need? *</label><textarea id="q-quickRequirement" name="quickRequirement" rows="3" maxlength="1500" required placeholder="Metal, approximate quantity and delivery city — whatever you know so far"></textarea></div>
+          </fieldset>
+          <fieldset data-detailed-fields hidden disabled><legend>Material &amp; specification</legend>
+
+            <div class="quote-field"><label for="q-family">Need / metal family *</label><select id="q-family" name="family" required><option value="">Select a family</option><option value="Ferrous">Ferrous</option><option value="Non-ferrous">Non-ferrous</option><option value="Not sure yet">Not sure yet</option></select></div>
+            <div class="quote-field"><label for="q-material">Material *</label><select id="q-material" name="material" required disabled><option value="">Choose a family first</option></select></div>
+            <div class="quote-field--full" data-custom-material hidden><div class="quote-field"><label for="q-customMaterial">Material name *</label><input id="q-customMaterial" name="customMaterial" maxlength="120" disabled /></div></div>
+            <div class="quote-field"><label for="q-productForm">Product form</label><select id="q-productForm" name="productForm" disabled><option value="">Choose a material first</option></select></div>
+            <div class="quote-field"><label for="q-grade">Grade / purity</label><select id="q-grade" name="grade" disabled><option value="">Choose a material first</option></select></div>
+            <div class="quote-field"><label for="q-certificate">Certification / test report</label><select id="q-certificate" name="certificate" aria-describedby="certificate-standard"><option value="">Please advise</option><option>Mill test certificate required</option><option>Third-party inspection required</option><option>No certificate requested</option></select><small id="certificate-standard" hidden></small></div>
+            <div class="quote-field" data-diameter hidden><label for="q-diameter">Diameter</label><select id="q-diameter" name="diameter" disabled><option value="">Select a diameter</option><option>8 mm</option><option>10 mm</option><option>12 mm</option><option>16 mm</option><option>20 mm</option><option>25 mm</option><option>28 mm</option><option>32 mm</option><option>Other — see requirement</option></select></div>
+            <div class="quote-field" data-flat-dimension><label for="q-thickness">Thickness (mm)</label><input id="q-thickness" name="thickness" type="number" inputmode="decimal" min="0.001" step="any" /></div>
+            <div class="quote-field" data-flat-dimension><label for="q-width">Width (mm)</label><input id="q-width" name="width" type="number" inputmode="decimal" min="0.001" step="any" /></div>
+            <div class="quote-field"><label for="q-hsn">HSN code (if known)</label><input id="q-hsn" name="hsn" inputmode="numeric" maxlength="8" pattern="(?:[0-9]{4}|[0-9]{6}|[0-9]{8})" title="Enter a 4, 6 or 8 digit HSN code." placeholder="Optional" aria-describedby="hsn-hint" /><small id="hsn-hint">Use the code from your purchase order or specification.</small></div>
+          </fieldset>
+          <fieldset data-detailed-fields hidden disabled><legend>Quantity &amp; delivery</legend>
+            <div class="quote-field"><label for="q-quantity">Quantity *</label><input id="q-quantity" name="quantity" type="number" min="0.001" step="any" max="1000000000" required placeholder="Enter quantity" /></div>
+            <div class="quote-field"><label for="q-unit">Unit *</label><select id="q-unit" name="unit" required><option value="">Select a unit</option><option value="Metric tonnes">Metric tonnes</option><option value="Kilograms">Kilograms</option><option value="Pieces">Pieces</option><option value="Metres">Metres</option></select></div>
+            <div class="quote-field"><label for="q-timing">When do you need it?</label><select id="q-timing" name="timing" ><option value="Flexible / please advise">Flexible / please advise</option><option value="As soon as available">As soon as available</option><option value="Within 2 weeks">Within 2 weeks</option><option value="Within 1 month">Within 1 month</option><option value="Within 3 months">Within 3 months</option><option value="Specific date">Specific date</option></select></div>
+<div data-delivery-date hidden><div class="quote-field"><label for="q-deliveryDate">Required delivery date *</label><input id="q-deliveryDate" name="deliveryDate" type="date" disabled /></div></div>
+            <div class="quote-field"><label for="q-country">Delivery country *</label><input id="q-country" name="country" autocomplete="country-name" value="India" required maxlength="100" /></div>
+            <div class="quote-field"><label for="q-state">State / region *</label><input id="q-state" name="state" autocomplete="address-level1" required maxlength="100" /></div>
+            <div class="quote-field"><label for="q-city">Delivery city / site *</label><input id="q-city" name="city" autocomplete="address-level2" required maxlength="160" /></div>
+            <div class="quote-field"><label for="q-postalCode">PIN / postal code</label><input id="q-postalCode" name="postalCode" autocomplete="postal-code" maxlength="20" /></div>
+          </fieldset>
+          <fieldset><legend>Your details</legend>
+            <div class="quote-field"><label for="q-name">Full name *</label><input id="q-name" name="name" autocomplete="name" required maxlength="160" /></div>
+            <div class="quote-field" data-detailed-contact hidden><label for="q-company">Company</label><input id="q-company" name="company" disabled autocomplete="organization" maxlength="160" /></div>
+            <div class="quote-field"><label for="q-email">Email *</label><input id="q-email" name="email" type="email" autocomplete="email" required maxlength="254" /></div>
+            <div class="quote-field"><label for="q-phone">Phone number *</label><input id="q-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="24" pattern="[+]?[0-9][0-9 \(\)\-]{5,22}[0-9]" title="Enter your phone number, including the country code." placeholder="+91" aria-describedby="phone-hint" /><small id="phone-hint">Include your country code.</small></div>
+</fieldset>
+          <fieldset data-detailed-fields hidden disabled>
+            <legend>Requirement</legend>
+            <div class="quote-field quote-field--full">
+              <p class="quote-requirement-hint" id="requirement-hint">Couldn’t find your grade? Write your requirement separately below.</p>
+              <label for="q-message">Custom requirement</label>
+              <textarea id="q-message" name="message" rows="3" maxlength="1500" aria-describedby="requirement-hint" placeholder="Custom grade, size, finish, packaging or additional items"></textarea>
+            </div>
+          </fieldset>
+          <label class="quote-consent"><input name="consent" type="checkbox" required /><span>I agree to be contacted by Creston Metals about this enquiry. *</span></label>
+          <div class="quote-submit"><button class="btn btn--primary" type="submit" data-btn><span class="btn__fill"></span><span class="btn__label">Prepare enquiry</span></button><p data-quote-status role="status">Opens an email draft. Review it and send it from your email app.</p></div>
+          <p class="quote-help">Prefer to talk? <a href="tel:+919265068741">+91 92650 68741</a><br /><a href="mailto:sales@crestonmetals.com">sales@crestonmetals.com</a></p>
         </form>
+      </section>
+      <section class="quote-process container" id="purchase-process" aria-labelledby="purchase-title">
+        <h2 id="purchase-title">How buying and delivery works</h2>
+        <ol class="quote-process__steps">
+          <li><h3>Send your requirement</h3><p>Choose the metal, specifications, quantity and delivery location.</p></li>
+          <li><h3>Review your quote</h3><p>We confirm availability, price and an expected delivery window before you place the order.</p></li>
+          <li><h3>Source and verify</h3><p>We arrange the material and confirm the agreed grade, weight and test documents before dispatch.</p></li>
+          <li><h3>Deliver to your site</h3><p>We coordinate transport to your delivery address and follow up through unloading.</p></li>
+        </ol>
       </section>
       <section class="quote-location container" aria-labelledby="location-title">
         <p class="quote-eyebrow">Visit us</p>

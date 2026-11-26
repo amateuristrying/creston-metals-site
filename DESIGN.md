@@ -65,7 +65,7 @@ The site has two themes, switched with the sun | moon control beside the logo. D
 |---|---|---|
 | **Archivo Variable** (wdth 62–125, wght 100–900) | `--font-display` | Headlines: width 118–125, weight 700–800, uppercase, tracking −0.02em, leading 0.92 |
 | **Archivo Variable** | `--font-body` | Body: width 100, weight 400, leading 1.55 |
-| **Instrument Serif Italic** | `--font-serif` | One emphasis word per headline, lowercase, ember gradient |
+| **Helvetica** | `--font-emphasis` | Upright amber emphasis in headings, at the surrounding text size |
 | **JetBrains Mono Variable** | `--font-mono` | Labels, numbers, grades: 11px, uppercase, tracking 0.14em |
 
 **Scale** (fluid, `clamp()`)
@@ -80,9 +80,9 @@ The site has two themes, switched with the sun | moon control beside the logo. D
 | `--fs-body` | 15 → 17px | Body |
 | `--fs-label` | 11px | Mono labels |
 
-**The headline pattern.** Section headlines are wide uppercase sans, with exactly one word in serif italic ember: `FROM STOCKYARD TO *skyline.*` The serif word is the soft thing the hard thing makes possible.
+**The headline pattern.** Section headlines pair wide uppercase Archivo with upright Helvetica in amber for the emphasized phrase.
 
-**The hero tagline is the exception:** `THE METAL BEHIND INDIA'S DREAMS.` is set in one face and one colour, with no serif word.
+**The hero tagline** uses one face and one colour throughout.
 
 **Section labels** follow `(03) — What metal becomes`, in mono.
 
@@ -129,7 +129,7 @@ Built on **GSAP** (ScrollTrigger, SplitText) with **Lenis** smooth scrolling, an
 - Text enters by rising out of a mask, line by line (stagger 0.08s). It never fades in flat.
 - Scroll-linked motion is scrubbed — the user's hand is the timeline. Building and car sequences are centred, full-section backgrounds beneath six centred foreground process chapters. A symmetrical wash keeps the overlaid text readable in both themes. Geometry, camera, road, sparks, chapter transitions and stage progress all seek to the same scroll position. No autoplay or pointer drift; stopping scroll holds the frame, and reversing scroll restores the earlier state.
 - Hover feedback starts within 100ms and follows the pointer's position.
-- `prefers-reduced-motion`: smooth scroll, cursor, preloader and reveals are disabled; content is simply there.
+- `prefers-reduced-motion`: smooth scroll, cursor and reveals are disabled. The two-stage entrance remains usable with immediate transitions.
 
 **Signature moments**
 
