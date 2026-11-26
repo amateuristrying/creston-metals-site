@@ -1,8 +1,10 @@
 # Cloudflare Pages response headers
 
+# Sofign (sofign.com) previews this site in a window on its works screen,
+# so it may frame it; every other site still can't.
 /*
   X-Content-Type-Options: nosniff
-  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: frame-ancestors 'self' https://sofign.com https://www.sofign.com https://sofign.pages.dev https://*.sofign.pages.dev http://localhost:*
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
