@@ -43,7 +43,7 @@ Run `npm test` for the scroll-driver regression checks and `npm run build` for b
 
 Detailed enquiry uses two columns on wider screens and one on phones. Material selection narrows the form and grade options. The form also captures dimensions, certification needs, an optional HSN code, quantity, delivery details and custom requirements. Submitting opens an email draft addressed to `sales@crestonmetals.com`.
 
-Vite builds a standalone page at `/metals/<slug>/` for each entry in `METALS`. The pages use the catalogue data and manufacturing notes in `src/js/data.js` and `src/js/metal-production.js`. To add an approved photo to both the card and detail page, add its public URL as the metal’s `image` value.
+Vite builds a standalone page at `/metals/<slug>/` for each entry in `METALS`. The pages use the catalogue data and manufacturing notes in `src/js/data.js` and `src/js/metal-production.js`. Product photos use `public/images/metals/<slug>-640.webp` for cards and `<slug>-1200.webp` for larger screens. The matching `photoAlt` entry describes the image. The generated photos are illustrative.
 
 The page embeds the supplied Google Maps pin at 20.2603662, 73.0114587. The shared footer is rendered by `src/js/footer.js`.
 

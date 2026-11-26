@@ -42,6 +42,7 @@
 .quote-process__steps li { border-top: 1px solid var(--line-strong); padding-top: 16px; }
 .quote-process__steps h3 { font-size: 1rem; margin-bottom: 8px; }
 .quote-process__steps p { color: var(--text-muted); font-size: .9375rem; line-height: 1.6; }
+.quote-process__photo { margin-top: clamp(24px, 4vw, 48px); }
 .quote-eyebrow { font-family: var(--font-mono); font-size: 13px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-muted); }
 .quote-location h2 em { color: var(--accent); }
 .quote-location { padding-bottom: clamp(80px, 9vw, 144px); }

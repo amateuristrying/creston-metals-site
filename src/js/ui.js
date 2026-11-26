@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { METALS, INDUSTRIES, CONTACT_EMAIL, metalUrl } from './data.js';
+import { METALS, INDUSTRIES, CONTACT_EMAIL, metalPhoto, metalUrl } from './data.js';
 
 const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 const $ = (selector, scope = document) => scope.querySelector(selector);
@@ -20,9 +20,11 @@ export function renderContent() {
         <article class="metal" data-metal>
           <span class="metal__sheen"></span>
           <div class="metal__top"><span class="metal__no">${m.no}</span><span>${group.family}</span></div>
-          <div class="metal__sym" data-sym="${m.sym}">${m.sym}</div>
+          <div class="metal__media">
+            <img class="metal__photo" src="${metalPhoto(m, 640)}" alt="${m.photoAlt}" width="640" height="426" loading="lazy" decoding="async" />
+            <span class="metal__sym" aria-hidden="true">${m.sym}</span>
+          </div>
           <h3 class="metal__name"><a href="${metalUrl(m)}" data-page-transition>${m.name}</a></h3>
-          ${m.image ? `<img class="metal__photo" src="${m.image}" alt="${m.name}" loading="lazy" />` : ''}
           <p class="metal__forms">${m.forms}</p>
           <ul class="metal__spec">
             <li><span>Grade</span><span>${m.grade}</span></li>
@@ -312,28 +314,21 @@ export function initNav(lenis) {
 export function initTilt() {
   if (!fine.matches) return;
   $$('[data-metal]').forEach((card) => {
-    const sym = $('.metal__sym', card);
     gsap.set(card, { transformPerspective: 900 });
     const rx = gsap.quickTo(card, 'rotationX', { duration: 0.6, ease: 'power3' });
     const ry = gsap.quickTo(card, 'rotationY', { duration: 0.6, ease: 'power3' });
-    const sx = gsap.quickTo(sym, 'x', { duration: 0.7, ease: 'power3' });
-    const sy = gsap.quickTo(sym, 'y', { duration: 0.7, ease: 'power3' });
     card.addEventListener('pointermove', (e) => {
       const r = card.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
       rx((0.5 - py) * 9);
       ry((px - 0.5) * 11);
-      sx((px - 0.5) * 18);
-      sy((py - 0.5) * 12);
       card.style.setProperty('--mx', `${px * 100}%`);
       card.style.setProperty('--my', `${py * 100}%`);
     });
     card.addEventListener('pointerleave', () => {
       rx(0);
       ry(0);
-      sx(0);
-      sy(0);
     });
   });
 }

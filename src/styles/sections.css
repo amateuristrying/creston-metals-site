@@ -109,7 +109,6 @@
 .hero__principles h2 { color: var(--accent); font: 600 .75rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
 .hero__principles p { margin-top: .4rem; font-size: .875rem; line-height: 1.45; }
 .hero__cta-note { font-size: .75em; }
-.metal__photo { width: 100%; height: 96px; object-fit: cover; }
 .business-panel { padding-block: 2rem 5rem; }
 .business-panel details { border-block: 1px solid var(--line); padding: 1rem 0; max-inline-size: 32rem; }
 .business-panel summary { cursor: pointer; font-weight: 600; }
@@ -208,6 +207,8 @@
   line-height: 1.1;
   letter-spacing: -0.025em;
 }
+
+.about__photo { margin-top: clamp(2rem, 5vw, 5rem); }
 
 .pillars {
   display: grid;
@@ -463,44 +464,44 @@
   color: var(--accent);
 }
 
-.metal__sym {
+.metal__media {
   position: relative;
-  margin-block: auto;
-  padding-block: 0.5rem;
-  font-family: var(--font-display);
-  font-stretch: 125%;
-  font-weight: 800;
-  font-size: clamp(4.25rem, 7.4vw, 7.75rem);
-  line-height: 0.9;
-  letter-spacing: -0.04em;
-  background: var(--grad-steel);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  will-change: transform;
+  flex: 1 1 0;
+  min-height: 100px;
+  margin-block: .85rem 1rem;
+  overflow: hidden;
+  background: var(--bg-raised);
 }
 
-.metal__sym::after {
-  content: attr(data-sym);
+.metal__photo {
   position: absolute;
-  left: 0;
-  top: 0.5rem;
-  background: var(--grad-ember);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s var(--ease-out);
 }
 
-.metal:hover .metal__sym::after {
-  opacity: 1;
+.metal:hover .metal__photo { transform: scale(1.04); }
+
+.metal__sym {
+  position: absolute;
+  bottom: .6rem;
+  left: .6rem;
+  padding: .3rem .45rem;
+  background: rgba(15, 17, 21, .82);
+  color: white;
+  font: 500 .7rem var(--font-mono);
+  letter-spacing: .08em;
 }
 
 .metal__name {
   margin-bottom: 0.35rem;
   text-transform: uppercase;
 }
+
+.metal__name a::after { content: ''; position: absolute; inset: 0; }
+.metal__name a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .metal__forms {
   color: var(--text-muted);
@@ -583,10 +584,6 @@
 
   .metal-group strong {
     font-size: 2.4rem;
-  }
-
-  .metal__sym {
-    font-size: 5rem;
   }
 }
 

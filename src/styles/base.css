@@ -106,6 +106,24 @@ button {
   margin-inline: auto;
 }
 
+.editorial-photo { margin-inline: 0; min-width: 0; }
+.editorial-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2.35;
+  object-fit: cover;
+  background: var(--bg-raised);
+}
+.editorial-photo figcaption {
+  margin-top: .75rem;
+  color: var(--text-muted);
+  font: 400 .75rem/1.4 var(--font-mono);
+}
+@media (max-width: 600px) {
+  .editorial-photo img { aspect-ratio: 1.5; }
+}
+
 .page-curtain {
   position: fixed;
   inset: 0;
